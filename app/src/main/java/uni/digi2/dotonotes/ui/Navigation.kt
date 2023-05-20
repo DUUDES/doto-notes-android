@@ -1,5 +1,7 @@
 package uni.digi2.dotonotes.ui
 
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
@@ -16,13 +18,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import uni.digi2.dotonotes.ui.screens.authorization.FirebaseUIAuthScreen
+import uni.digi2.dotonotes.ui.screens.authorization.AuthScreen
 import uni.digi2.dotonotes.ui.screens.home.HomeScreen
 import uni.digi2.dotonotes.ui.screens.profile.ProfileScreen
+import uni.digi2.dotonotes.ui.screens.profile.signOut
 import uni.digi2.dotonotes.ui.screens.tasks.TodoListScreen
 import uni.digi2.dotonotes.ui.screens.tasks.TodoViewModel
 
@@ -38,10 +44,13 @@ fun AppNavHost(navController: NavController) {
             HomeScreen()
         }
         composable(Screen.Profile.route) {
-            ProfileScreen()
+            ProfileScreen(onSignOut = { signOut(navController) })
         }
         composable(Screen.Tasks.route) {
             TodoListScreen()
+        }
+        composable("auth") {
+            AuthScreen(navController)
         }
     }
 }
@@ -53,14 +62,17 @@ val LocalNavController = compositionLocalOf<NavController> { error("No NavContro
 fun BottomNavigationApp(navController: NavController) {
     val items = listOf(
         Screen.Home,
-        Screen.Profile,
-        Screen.Tasks
+        Screen.Tasks,
+        Screen.Profile
     )
 
     CompositionLocalProvider(LocalNavController provides navController) {
         Scaffold(
             bottomBar = {
-                BottomNavigation {
+                BottomNavigation(
+//                    backgroundColor = Color.Black, // Задаємо чорний фон для BottomNavigation
+                    contentColor = Color.White // Задаємо білий колір контенту (тексту та іконок)
+                ) {
                     val currentRoute = LocalNavController.current.currentDestination?.route
 
                     items.forEach { screen ->
@@ -75,16 +87,34 @@ fun BottomNavigationApp(navController: NavController) {
                         }
 
                         BottomNavigationItem(
-                            icon = { Icon(screen.icon, contentDescription = screen.title) },
-                            label = { Text(screen.title) },
+                            icon = {
+                                Icon(
+                                    screen.icon,
+                                    contentDescription = screen.title,
+                                    tint = if (selected) Color.Gray else Color.White // Задаємо колір іконки
+                                )
+                            },
+                            label = {
+                                Text(
+                                    text = screen.title,
+                                    color = if (selected) Color.Gray else Color.White // Задаємо колір тексту
+                                )
+                            },
                             selected = selected,
-                            onClick = onClick
+                            onClick = onClick,
+                            selectedContentColor = Color.White// Задаємо колір вибраного контенту
+//                            unselectedContentColor = Color.Gray, // Задаємо колір невибраного контенту
+//                            modifier = Modifier.background(Color.Black) // Задаємо чорний фон для кожного пункту
                         )
                     }
                 }
             }
         ) { innerPadding ->
-            Box(modifier = Modifier.padding(innerPadding)) {
+            Box(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .background(Color.White) // Задаємо білий фон для контенту
+            ) {
                 AppNavHost(navController = navController)
             }
         }
@@ -92,7 +122,7 @@ fun BottomNavigationApp(navController: NavController) {
 }
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
-    object Home : Screen("home", "Головна сторінка", Icons.Default.Home)
+    object Home : Screen("home", "Головна", Icons.Default.Home)
     object Tasks : Screen("tasks", "Завдання", Icons.Filled.Check)
     object Profile : Screen("profile", "Профіль", Icons.Default.Person)
 }
