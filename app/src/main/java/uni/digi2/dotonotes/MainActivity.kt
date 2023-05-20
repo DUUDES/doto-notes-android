@@ -144,18 +144,16 @@ fun ProfileScreen() {
 fun AppNavHost(navController: NavController) {
     NavHost(
         navController = navController as NavHostController,
-        startDestination = "home"
+        startDestination = Screen.Home.route
     ) {
-        composable("home") {
+        composable(Screen.Home.route) {
             HomeScreen()
         }
-        composable("profile") {
+        composable(Screen.Profile.route) {
             ProfileScreen()
         }
     }
 }
-
-
 
 val LocalNavController = compositionLocalOf<NavController> { error("No NavController found") }
 
