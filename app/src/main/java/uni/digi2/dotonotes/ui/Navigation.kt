@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,19 +23,25 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import uni.digi2.dotonotes.ui.screens.home.HomeScreen
 import uni.digi2.dotonotes.ui.screens.profile.ProfileScreen
+import uni.digi2.dotonotes.ui.screens.tasks.TodoListScreen
+import uni.digi2.dotonotes.ui.screens.tasks.TodoViewModel
 
 
 @Composable
 fun AppNavHost(navController: NavController) {
+
     NavHost(
         navController = navController as NavHostController,
-        startDestination = "home"
+        startDestination = Screen.Home.route
     ) {
-        composable("home") {
+        composable(Screen.Home.route) {
             HomeScreen()
         }
-        composable("profile") {
+        composable(Screen.Profile.route) {
             ProfileScreen()
+        }
+        composable(Screen.Tasks.route) {
+            TodoListScreen()
         }
     }
 }
@@ -46,7 +53,8 @@ val LocalNavController = compositionLocalOf<NavController> { error("No NavContro
 fun BottomNavigationApp(navController: NavController) {
     val items = listOf(
         Screen.Home,
-        Screen.Profile
+        Screen.Profile,
+        Screen.Tasks
     )
 
     CompositionLocalProvider(LocalNavController provides navController) {
@@ -85,5 +93,6 @@ fun BottomNavigationApp(navController: NavController) {
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
     object Home : Screen("home", "Головна сторінка", Icons.Default.Home)
+    object Tasks : Screen("tasks", "Завдання", Icons.Filled.Check)
     object Profile : Screen("profile", "Профіль", Icons.Default.Person)
 }
