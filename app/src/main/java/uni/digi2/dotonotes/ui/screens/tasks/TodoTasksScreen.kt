@@ -27,18 +27,24 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.google.firebase.auth.FirebaseAuth
+import uni.digi2.dotonotes.data.tasks.TaskRepository
+import uni.digi2.dotonotes.data.tasks.TodoTasksDao
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TodoListScreen(viewModel: TodoViewModel = TodoViewModel()) {
-    val tasks by viewModel.tasks.collectAsState()
+fun TodoListScreen(viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoTasksDao()))) {
+    val tasks = remember { mutableStateListOf<TodoTask>() }
     val showDialog = remember { mutableStateOf(false) }
+
+    val auth = FirebaseAuth.getInstance()
 
     Scaffold (
         floatingActionButton = {
@@ -59,10 +65,10 @@ fun TodoListScreen(viewModel: TodoViewModel = TodoViewModel()) {
                         TodoTaskItem(
                             task = task,
                             onTaskUpdate = { updatedTask ->
-                                viewModel.updateTask(updatedTask)
+                                auth.currentUser?.let { it1 -> viewModel.updateTask(it1.uid, updatedTask) }
                             },
                             onTaskDelete = { deletedTask ->
-                                viewModel.deleteTask(deletedTask)
+                                auth.currentUser?.let { it1 -> viewModel.deleteTask(it1.uid, deletedTask.id) }
                             }
                         )
                     }
@@ -74,7 +80,7 @@ fun TodoListScreen(viewModel: TodoViewModel = TodoViewModel()) {
     if (showDialog.value) {
         CreateTaskDialog(
             onTaskCreated = { newTaskTitle ->
-                viewModel.addTask(TodoTask(title = newTaskTitle))
+                auth.currentUser?.let { it1 -> viewModel.addTask(it1.uid, TodoTask(title = newTaskTitle)) }
             },
             onDismiss = { showDialog.value = false }
         )
