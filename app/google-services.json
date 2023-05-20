@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "11410636807",
+    "project_id": "dotonotes",
+    "storage_bucket": "dotonotes.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:11410636807:android:bbd7ac4ccfc50da9196aa2",
+        "android_client_info": {
+          "package_name": "uni.digi2.dotonotes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "11410636807-q32sfagfq4rk1od35htmb69e2ebvi4ta.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "uni.digi2.dotonotes",
+            "certificate_hash": "98220f0a4425abe6eeb0273eed2dd6ba1c1fe5d9"
+          }
+        },
+        {
+          "client_id": "11410636807-dinmall3pveotsjfvf62b369h39o3ued.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDga9XNK85I2_v5-t1YbqXzXcwPUYOFSPo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "11410636807-dinmall3pveotsjfvf62b369h39o3ued.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
