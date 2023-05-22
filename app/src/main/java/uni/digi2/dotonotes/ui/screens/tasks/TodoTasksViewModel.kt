@@ -1,20 +1,31 @@
 package uni.digi2.dotonotes.ui.screens.tasks
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import uni.digi2.dotonotes.data.tasks.TaskRepository
 import uni.digi2.dotonotes.data.tasks.TodoTask
 
 class TodoViewModel(private val taskRepository: TaskRepository) : ViewModel() {
-    private val _tasks = mutableStateOf<List<TodoTask>>(emptyList())
-    val tasks: State<List<TodoTask>> = _tasks
+    private val _tasks = MutableStateFlow<List<TodoTask>>(emptyList())
+    val tasks: StateFlow<List<TodoTask>> = _tasks
 
     init {
-        FirebaseAuth.getInstance().currentUser?.let { getTasks(it.uid) }
+        FirebaseAuth.getInstance().currentUser?.let { user ->
+            getTasks(user.uid)
+            viewModelScope.launch {
+                taskRepository.observeTasksRealtime(user.uid)
+                    .collect {
+                        _tasks.value = it
+                    }
+            }
+        }
     }
 
     private fun getTasks(userId: String) {

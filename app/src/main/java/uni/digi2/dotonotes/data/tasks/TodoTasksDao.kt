@@ -3,6 +3,15 @@ package uni.digi2.dotonotes.data.tasks
 import android.content.ContentValues.TAG
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.snapshots
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
+import com.google.firebase.firestore.EventListener
+import com.google.firebase.firestore.ListenerRegistration
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import java.util.Date
 
@@ -26,6 +35,7 @@ interface TaskDao {
     suspend fun getTasks(userId: String): List<TodoTask>
     suspend fun updateTask(userId: String, task: TodoTask)
     suspend fun deleteTask(userId: String, taskId: String)
+    fun observeTasksRealtime(userId: String): Flow<List<TodoTask>>
 }
 
 class TodoTasksDao : TaskDao {
@@ -38,6 +48,26 @@ class TodoTasksDao : TaskDao {
         val todos = documentSnapshot.toObject(TodoTasksCollection::class.java)
 
         return todos?.tasks ?: emptyList()
+    }
+
+    override fun observeTasksRealtime(userId: String): Flow<List<TodoTask>> = callbackFlow  {
+        val documentRef = db.collection("users").document(userId)
+
+        val listenerRegistration = documentRef.addSnapshotListener(EventListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+                return@EventListener
+            }
+
+            val tasks = snapshot?.toObject(TodoTasksCollection::class.java)?.tasks ?: emptyList()
+            try {
+                trySend(tasks).isSuccess
+            } catch (exception: Exception) {
+                close(exception)
+            }
+        })
+
+        awaitClose { listenerRegistration.remove() }
     }
 
     override suspend fun addTask(userId: String, task: TodoTask) {

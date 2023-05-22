@@ -1,5 +1,7 @@
 package uni.digi2.dotonotes.data.tasks
 
+import kotlinx.coroutines.flow.Flow
+
 class TaskRepository(private val taskDao: TaskDao) {
     suspend fun addTask(userId: String, task: TodoTask) {
         taskDao.addTask(userId, task)
@@ -15,5 +17,9 @@ class TaskRepository(private val taskDao: TaskDao) {
 
     suspend fun deleteTask(userId: String, taskId: String) {
         taskDao.deleteTask(userId, taskId)
+    }
+
+    fun observeTasksRealtime(userId: String) : Flow<List<TodoTask>> {
+        return taskDao.observeTasksRealtime(userId)
     }
 }

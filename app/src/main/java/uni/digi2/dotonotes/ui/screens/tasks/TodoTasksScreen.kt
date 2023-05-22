@@ -27,6 +27,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,7 +43,7 @@ import java.util.Date
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoListScreen(viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoTasksDao()))) {
-    val tasks = remember { viewModel.tasks }
+    val tasks by viewModel.tasks.collectAsState()
     val showCreateDialog = remember { mutableStateOf(false) }
     val showEditDialog = remember { mutableStateOf("") }
 
@@ -62,7 +64,7 @@ fun TodoListScreen(viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoT
                 Text("Todo List", style = MaterialTheme.typography.headlineLarge)
                 Spacer(modifier = Modifier.height(16.dp))
                 LazyColumn {
-                    items(tasks.value) { task ->
+                    items(tasks) { task ->
                         TodoTaskItem(
                             task = task,
                             onTaskUpdate = { updatedTask ->
@@ -104,7 +106,7 @@ fun TodoListScreen(viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoT
     }
     if (showEditDialog.value != "") {
         UpdateTaskDialog(
-            tasks.value.first { it.id == showEditDialog.value },
+            tasks.first { it.id == showEditDialog.value },
             onTaskUpdated = { task ->
                 auth.currentUser?.let { it1 ->
                     viewModel.updateTask(
