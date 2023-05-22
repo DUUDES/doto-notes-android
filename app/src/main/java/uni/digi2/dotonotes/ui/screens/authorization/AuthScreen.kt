@@ -3,6 +3,7 @@ package uni.digi2.dotonotes.ui.screens.authorization
 import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -24,7 +25,6 @@ fun AuthScreen(navController: NavController) {
     )
 
     FirebaseUIAuthScreen(
-        firebaseAuth = FirebaseAuth.getInstance(),
         signInProviders = providers,
         onSignInSuccess = {
             navController.navigate(Screen.Home.route)
@@ -35,28 +35,29 @@ fun AuthScreen(navController: NavController) {
 
 @Composable
 fun FirebaseUIAuthScreen(
-    firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance(),
     signInProviders: List<AuthUI.IdpConfig>,
     onSignInSuccess: () -> Unit,
     onSignInFailure: (Exception) -> Unit
 ) {
     val context = LocalContext.current
     val signInLauncher = rememberLauncherForActivityResult(
-        contract = FirebaseAuthUIActivityResultContract()
+        contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             onSignInSuccess()
         } else {
-            val response = IdpResponse.fromResultIntent(null)
+            val response = IdpResponse.fromResultIntent(result.data)
             response?.error?.let { error ->
                 onSignInFailure(error)
             }
         }
     }
 
-    val signInIntent = remember {
-        AuthUI.getInstance().createSignInIntentBuilder().setIsSmartLockEnabled(false)
-            .setLogo(R.drawable.ic_todo_list).setAvailableProviders(signInProviders).build()
+    val signInIntent = remember(signInProviders) {
+        AuthUI.getInstance().createSignInIntentBuilder()
+            .setLogo(R.drawable.ic_todo_list)
+            .setAvailableProviders(signInProviders)
+            .build()
     }
 
     LaunchedEffect(Unit) {

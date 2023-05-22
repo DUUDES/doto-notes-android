@@ -24,11 +24,11 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.google.firebase.auth.FirebaseAuth
 import uni.digi2.dotonotes.ui.screens.authorization.FirebaseUIAuthScreen
 import uni.digi2.dotonotes.ui.screens.authorization.AuthScreen
 import uni.digi2.dotonotes.ui.screens.home.HomeScreen
 import uni.digi2.dotonotes.ui.screens.profile.ProfileScreen
-import uni.digi2.dotonotes.ui.screens.profile.signOut
 import uni.digi2.dotonotes.ui.screens.tasks.TodoListScreen
 import uni.digi2.dotonotes.ui.screens.tasks.TodoViewModel
 
@@ -44,12 +44,15 @@ fun AppNavHost(navController: NavController) {
             HomeScreen()
         }
         composable(Screen.Profile.route) {
-            ProfileScreen(onSignOut = { signOut(navController) })
+            ProfileScreen(onSignOut = {
+                FirebaseAuth.getInstance().signOut()
+                navController.navigate(Screen.Auth.route)
+            })
         }
         composable(Screen.Tasks.route) {
             TodoListScreen()
         }
-        composable("auth") {
+        composable(Screen.Auth.route) {
             AuthScreen(navController)
         }
     }
@@ -125,4 +128,5 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     object Home : Screen("home", "Головна", Icons.Default.Home)
     object Tasks : Screen("tasks", "Завдання", Icons.Filled.Check)
     object Profile : Screen("profile", "Профіль", Icons.Default.Person)
+    object Auth : Screen("auth", "Авторизація", Icons.Default.Person)
 }

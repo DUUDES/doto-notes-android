@@ -1,6 +1,7 @@
 package uni.digi2.dotonotes
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -36,14 +37,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             if (FirebaseAuth.getInstance().currentUser == null) {
-                FirebaseUIAuthScreen(firebaseAuth = firebaseAuth,
+                FirebaseUIAuthScreen(
                     signInProviders = providers,
                     onSignInSuccess = {
                         setContent {
                             BottomNavigationApp(navController)
                         }
                     },
-                    onSignInFailure = { error -> throw error })
+                    onSignInFailure = {
+                        error -> Log.d("GAUTH ERROR","error encountered on google auth ${error.message}")
+                    })
             } else {
                 BottomNavigationApp(navController)
             }

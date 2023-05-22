@@ -20,9 +20,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat.recreate
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 import uni.digi2.dotonotes.ui.screens.authorization.FirebaseUIAuthScreen
 import uni.digi2.dotonotes.ui.utils.Greeting
 
@@ -60,20 +62,14 @@ fun ProfileScreen(onSignOut: () -> Unit) {
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            // Кнопка для логауту
             Button(
-                onClick = { onSignOut() },
+                onClick = {
+                    onSignOut()
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(text = "Вийти")
             }
         }
     }
-}
-
-fun signOut(navController: NavController) {
-    val firebaseAuth = FirebaseAuth.getInstance()
-    firebaseAuth.signOut()
-
-    navController.navigate("auth")
 }

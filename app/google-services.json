@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "11410636807",
+    "firebase_url": "https://dotonotes-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "dotonotes",
     "storage_bucket": "dotonotes.appspot.com"
   },
@@ -22,7 +23,7 @@
           }
         },
         {
-          "client_id": "11410636807-dinmall3pveotsjfvf62b369h39o3ued.apps.googleusercontent.com",
+          "client_id": "11410636807-cr0ceu87i8iv0no7gui81cuk3n4nv17i.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -35,7 +36,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "11410636807-dinmall3pveotsjfvf62b369h39o3ued.apps.googleusercontent.com",
+              "client_id": "11410636807-cr0ceu87i8iv0no7gui81cuk3n4nv17i.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
