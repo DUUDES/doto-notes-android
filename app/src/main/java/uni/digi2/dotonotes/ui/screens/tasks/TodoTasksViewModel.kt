@@ -1,70 +1,57 @@
 package uni.digi2.dotonotes.ui.screens.tasks
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import uni.digi2.dotonotes.data.tasks.TaskRepository
+import uni.digi2.dotonotes.data.tasks.TodoTask
 
-class TodoViewModel : ViewModel() {
-    private val database = FirebaseDatabase.getInstance().reference.child("tasks")
-    private val _tasks = mutableStateListOf<TodoTask>()
-
-    val tasks: MutableStateFlow<List<TodoTask>> = MutableStateFlow(_tasks.toList())
-
-    fun getTodos(userId: String) {
-        database.orderByChild("userId").equalTo(userId).addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                _tasks.clear()
-                for (childSnapshot in snapshot.children) {
-                    val task = childSnapshot.getValue(TodoTask::class.java)
-                    task?.let { _tasks.add(it) }
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // Handle error
-            }
-        })
-    }
+class TodoViewModel(private val taskRepository: TaskRepository) : ViewModel() {
+    private val _tasks = MutableStateFlow<List<TodoTask>>(emptyList())
+    val tasks: StateFlow<List<TodoTask>> = _tasks
 
     init {
-        database.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (childSnapshot in snapshot.children) {
-                    val task = childSnapshot.getValue(TodoTask::class.java)
-                    task?.let { _tasks.add(it) }
-                }
+        FirebaseAuth.getInstance().currentUser?.let { user ->
+            getTasks(user.uid)
+            viewModelScope.launch {
+                taskRepository.observeTasksRealtime(user.uid)
+                    .collect {
+                        _tasks.value = it
+                    }
             }
-
-            override fun onCancelled(error: DatabaseError) {
-                // Handle error
-            }
-        })
+        }
     }
 
-    fun addTask(task: TodoTask) {
-        val taskId = database.push().key ?: return
-        val newTask = task.copy(id = taskId)
-        database.child(taskId).setValue(newTask)
+    private fun getTasks(userId: String) {
+        viewModelScope.launch {
+            _tasks.value = taskRepository.getTasks(userId)
+        }
     }
 
-    fun updateTask(task: TodoTask) {
-        database.child(task.id).setValue(task)
+    fun addTask(userId: String, task: TodoTask) {
+        viewModelScope.launch {
+            taskRepository.addTask(userId, task)
+            getTasks(userId)
+        }
     }
 
-    fun deleteTask(task: TodoTask) {
-        database.child(task.id).removeValue()
+    fun updateTask(userId: String, task: TodoTask) {
+        viewModelScope.launch {
+            taskRepository.updateTask(userId, task)
+            getTasks(userId)
+        }
+    }
+
+    fun deleteTask(userId: String, taskId: String) {
+        viewModelScope.launch {
+            taskRepository.deleteTask(userId, taskId)
+            getTasks(userId)
+        }
     }
 }
-
-data class TodoTask(
-    val id: String = "",
-    val title: String = "",
-    val description: String = "",
-    val priority: Int = 0,
-    val completed: Boolean = false,
-    val userId: String = ""
-)
