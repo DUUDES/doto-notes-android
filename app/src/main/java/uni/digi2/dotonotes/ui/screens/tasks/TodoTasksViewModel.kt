@@ -4,14 +4,20 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import uni.digi2.dotonotes.data.tasks.TaskRepository
+import uni.digi2.dotonotes.data.tasks.TodoTask
 
 class TodoViewModel(private val taskRepository: TaskRepository) : ViewModel() {
     private val _tasks = mutableStateOf<List<TodoTask>>(emptyList())
     val tasks: State<List<TodoTask>> = _tasks
-    
-    fun getTasks(userId: String) {
+
+    init {
+        FirebaseAuth.getInstance().currentUser?.let { getTasks(it.uid) }
+    }
+
+    private fun getTasks(userId: String) {
         viewModelScope.launch {
             _tasks.value = taskRepository.getTasks(userId)
         }
@@ -38,12 +44,3 @@ class TodoViewModel(private val taskRepository: TaskRepository) : ViewModel() {
         }
     }
 }
-
-data class TodoTask(
-    val id: String = "",
-    val title: String = "",
-    val description: String = "",
-    val priority: Int = 0,
-    val completed: Boolean = false,
-    val userId: String = ""
-)

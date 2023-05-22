@@ -1,7 +1,5 @@
 package uni.digi2.dotonotes.data.tasks
 
-import uni.digi2.dotonotes.ui.screens.tasks.TodoTask
-
 class TaskRepository(private val taskDao: TaskDao) {
     suspend fun addTask(userId: String, task: TodoTask) {
         taskDao.addTask(userId, task)

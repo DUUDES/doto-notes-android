@@ -1,10 +1,25 @@
 package uni.digi2.dotonotes.data.tasks
 
-import com.google.firebase.firestore.FieldValue
+import android.content.ContentValues.TAG
+import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
-import uni.digi2.dotonotes.ui.screens.profile.User
-import uni.digi2.dotonotes.ui.screens.tasks.TodoTask
+import java.util.Date
+
+
+data class TodoTask(
+    var id: String = "",
+    val title: String = "",
+    val description: String = "",
+    val priority: Int = 0,
+    val createdOn: Date = Date(),
+    val checkedOn: Date? = null,
+    val completed: Boolean = false
+)
+
+data class TodoTasksCollection(
+    val tasks: MutableList<TodoTask> = mutableListOf()
+)
 
 interface TaskDao {
     suspend fun addTask(userId: String, task: TodoTask)
@@ -16,39 +31,68 @@ interface TaskDao {
 class TodoTasksDao : TaskDao {
     private val db = FirebaseFirestore.getInstance()
 
-    override suspend fun addTask(userId: String, task: TodoTask) {
-        db.collection("users")
-            .document(userId)
-            .update("todoTasks", FieldValue.arrayUnion(task))
-            .await()
+    override suspend fun getTasks(userId: String): List<TodoTask> {
+        val documentRef = db.collection("users").document(userId)
+
+        val documentSnapshot = documentRef.get().await()
+        val todos = documentSnapshot.toObject(TodoTasksCollection::class.java)
+
+        return todos?.tasks ?: emptyList()
     }
 
-    override suspend fun getTasks(userId: String): List<TodoTask> {
-        val userDoc = db.collection("users")
-            .document(userId)
-            .get()
-            .await()
+    override suspend fun addTask(userId: String, task: TodoTask) {
+        val documentRef = db.collection("users").document(userId)
 
-        val user = userDoc.toObject(User::class.java)
-        return user?.todoTasks ?: emptyList()
+        val taskRef = documentRef.collection("tasks")
+            .document()
+
+        val taskId = taskRef.id
+        task.id = taskId
+
+        documentRef.get().addOnSuccessListener {
+            val data = it.toObject(TodoTasksCollection::class.java) ?: TodoTasksCollection()
+
+            data.tasks.add(task)
+
+            documentRef.set(data).addOnSuccessListener {
+                Log.d(TAG, "Document added with ID: $userId")
+            }.addOnFailureListener { e ->
+                Log.w(TAG, "Error adding document", e)
+            }
+        }
     }
 
     override suspend fun updateTask(userId: String, task: TodoTask) {
-        db.collection("users")
-            .document(userId)
-            .update("todoTasks", FieldValue.arrayRemove(task))
-            .await()
+        val documentRef = db.collection("users").document(userId)
 
-        db.collection("users")
-            .document(userId)
-            .update("todoTasks", FieldValue.arrayUnion(task))
-            .await()
+        documentRef.get().addOnSuccessListener {
+            val data = it.toObject(TodoTasksCollection::class.java) ?: TodoTasksCollection()
+
+            data.tasks.removeIf { t -> t.id == task.id }
+            data.tasks.add(task)
+
+            documentRef.set(data).addOnSuccessListener {
+                Log.d(TAG, "Document added with ID: $userId")
+            }.addOnFailureListener { e ->
+                Log.w(TAG, "Error adding document", e)
+            }
+        }
     }
 
     override suspend fun deleteTask(userId: String, taskId: String) {
-        db.collection("users")
-            .document(userId)
-            .update("todoTasks", FieldValue.arrayRemove(taskId))
-            .await()
+        val documentRef = db.collection("users").document(userId)
+
+        documentRef.get().addOnSuccessListener {
+            val data = it.toObject(TodoTasksCollection::class.java) ?: TodoTasksCollection()
+
+            data.tasks.removeIf { task -> task.id == taskId }
+
+            documentRef.set(data).addOnSuccessListener {
+                Log.d(TAG, "Document added with ID: $userId")
+            }.addOnFailureListener { e ->
+                Log.w(TAG, "Error adding document", e)
+            }
+        }
+
     }
 }
