@@ -55,7 +55,6 @@ fun FirebaseUIAuthScreen(
 
     val signInIntent = remember(signInProviders) {
         AuthUI.getInstance().createSignInIntentBuilder()
-            .setIsSmartLockEnabled(true)
             .setLogo(R.drawable.ic_todo_list)
             .setAvailableProviders(signInProviders)
             .build()
