@@ -46,6 +46,7 @@ fun TodoListScreen(viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoT
     val tasks by viewModel.tasks.collectAsState()
     val showCreateDialog = remember { mutableStateOf(false) }
     val showEditDialog = remember { mutableStateOf("") }
+    val showDeleteDialog = remember { mutableStateOf("") }
 
     val auth = FirebaseAuth.getInstance()
 
@@ -83,7 +84,8 @@ fun TodoListScreen(viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoT
                                     )
                                 }
                             },
-                            showEditDialog = { showEditDialog.value = task.id }
+                            showEditDialog = { showEditDialog.value = task.id },
+                            showDeleteDialog = {showDeleteDialog.value = task.id}
                         )
                     }
                 }
@@ -118,6 +120,21 @@ fun TodoListScreen(viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoT
             onDismiss = { showEditDialog.value = "" }
         )
     }
+
+    if (showDeleteDialog.value != "") {
+        DeleteTaskDialog(
+            tasks.first { it.id == showDeleteDialog.value },
+            onTaskDeleted = { deletedTask ->
+                auth.currentUser?.let { it1 ->
+                    viewModel.deleteTask(
+                        it1.uid,
+                        deletedTask.id
+                    )
+                }
+            },
+            onDismiss = { showDeleteDialog.value = "" }
+        )
+    }
 }
 
 @Composable
@@ -143,6 +160,56 @@ fun UpdateTaskDialog(
     onDismiss = onDismiss
 )
 
+@Composable
+fun DeleteTaskDialog(
+    todoTask: TodoTask,
+    onTaskDeleted: (TodoTask) -> Unit,
+    onDismiss: () -> Unit
+) = DeleteDialog(
+    task = todoTask,
+    label = "Delete ToDo",
+    onSubmit = onTaskDeleted,
+    onDismiss = onDismiss
+)
+
+
+@Composable
+fun DeleteDialog(
+    task: TodoTask?,
+    label: String,
+    onSubmit: (TodoTask) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var taskTitle by remember { mutableStateOf(task?.title ?: "") }
+    var taskDescription by remember { mutableStateOf(task?.description ?: "") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(label) },
+        text = {
+           Text(text =  "Are you sure you want to delete  \"${task?.title ?: "this"}\"  task?")
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (taskTitle.isNotBlank()) {
+                        onSubmit(task?.copy(title = taskTitle, description = taskDescription) ?: TodoTask(title = taskTitle, description = taskDescription))
+                        onDismiss()
+                    }
+                }
+            ) {
+                Text("Yes!")
+            }
+        },
+        dismissButton = {
+            Button(
+                onClick = { onDismiss() }
+            ) {
+                Text("Cancel")
+            }
+        }
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -200,7 +267,8 @@ fun TodoTaskItem(
     task: TodoTask,
     onTaskUpdate: (TodoTask) -> Unit,
     onTaskDelete: (TodoTask) -> Unit,
-    showEditDialog: () -> Unit
+    showEditDialog: () -> Unit,
+    showDeleteDialog: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -231,7 +299,7 @@ fun TodoTaskItem(
             Icon(Icons.Default.Edit, contentDescription = "Edit Task")
         }
         IconButton(
-            onClick = { onTaskDelete(task) }
+            onClick = showDeleteDialog
         ) {
             Icon(Icons.Default.Delete, contentDescription = "Delete Task")
         }
