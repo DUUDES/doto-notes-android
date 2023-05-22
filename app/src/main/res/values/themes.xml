@@ -4,9 +4,9 @@
     <style name="Theme.DoToNotes" parent="android:Theme.Material.Light.NoActionBar" />
 
     <style name="Theme.CustomSplash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#1A237E</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_todo_list</item>
-<!--        <item name="android:windowSplashScreenBrandingImage">@drawable/brand_name</item>-->
+        <item name="windowSplashScreenBackground">#3D8E94</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/im_round_larger</item>
+<!--        <item name="android:windowSplashScreenBrandingImage">@drawable/im_brandname</item>-->
         <item name="postSplashScreenTheme">@style/Theme.DoToNotes</item>
     </style>
 </resources>

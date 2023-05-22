@@ -71,6 +71,7 @@ fun BottomNavigationApp(navController: NavController) {
 
     CompositionLocalProvider(LocalNavController provides navController) {
         Scaffold(
+
             bottomBar = {
                 BottomNavigation(
 //                    backgroundColor = Color.Black, // Задаємо чорний фон для BottomNavigation
