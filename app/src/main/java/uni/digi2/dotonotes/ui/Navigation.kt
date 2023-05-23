@@ -8,7 +8,9 @@ import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -29,6 +31,7 @@ import uni.digi2.dotonotes.ui.screens.authorization.FirebaseUIAuthScreen
 import uni.digi2.dotonotes.ui.screens.authorization.AuthScreen
 import uni.digi2.dotonotes.ui.screens.home.HomeScreen
 import uni.digi2.dotonotes.ui.screens.profile.ProfileScreen
+import uni.digi2.dotonotes.ui.screens.tasks.CompletedTasksScreen
 import uni.digi2.dotonotes.ui.screens.tasks.TodoListScreen
 import uni.digi2.dotonotes.ui.screens.tasks.TodoViewModel
 
@@ -52,6 +55,9 @@ fun AppNavHost(navController: NavController) {
         composable(Screen.Tasks.route) {
             TodoListScreen()
         }
+        composable(Screen.CompletedTasks.route) {
+            CompletedTasksScreen()
+        }
         composable(Screen.Auth.route) {
             AuthScreen(navController)
         }
@@ -66,6 +72,7 @@ fun BottomNavigationApp(navController: NavController) {
     val items = listOf(
         Screen.Home,
         Screen.Tasks,
+        Screen.CompletedTasks,
         Screen.Profile
     )
 
@@ -127,7 +134,8 @@ fun BottomNavigationApp(navController: NavController) {
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
     object Home : Screen("home", "Головна", Icons.Default.Home)
-    object Tasks : Screen("tasks", "Завдання", Icons.Filled.Check)
+    object Tasks : Screen("tasks", "Завдання", Icons.Filled.List)
+    object CompletedTasks : Screen("completedTasks", "Виконані", Icons.Filled.Done)
     object Profile : Screen("profile", "Профіль", Icons.Default.Person)
-    object Auth : Screen("auth", "Авторизація", Icons.Default.Person)
+    object Auth : Screen("auth", "Авторизація", Icons.Default.Home)
 }

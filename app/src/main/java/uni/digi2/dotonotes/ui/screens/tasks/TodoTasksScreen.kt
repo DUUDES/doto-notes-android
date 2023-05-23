@@ -65,7 +65,7 @@ fun TodoListScreen(viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoT
                 Text("Todo List", style = MaterialTheme.typography.headlineLarge)
                 Spacer(modifier = Modifier.height(16.dp))
                 LazyColumn {
-                    items(tasks) { task ->
+                    items(tasks.filter { item -> !item.completed }) { task ->
                         TodoTaskItem(
                             task = task,
                             onTaskUpdate = { updatedTask ->
@@ -73,14 +73,6 @@ fun TodoListScreen(viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoT
                                     viewModel.updateTask(
                                         it1.uid,
                                         updatedTask
-                                    )
-                                }
-                            },
-                            onTaskDelete = { deletedTask ->
-                                auth.currentUser?.let { it1 ->
-                                    viewModel.deleteTask(
-                                        it1.uid,
-                                        deletedTask.id
                                     )
                                 }
                             },
@@ -266,7 +258,6 @@ fun TaskDialog(
 fun TodoTaskItem(
     task: TodoTask,
     onTaskUpdate: (TodoTask) -> Unit,
-    onTaskDelete: (TodoTask) -> Unit,
     showEditDialog: () -> Unit,
     showDeleteDialog: () -> Unit
 ) {
