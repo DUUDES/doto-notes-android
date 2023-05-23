@@ -35,6 +35,7 @@ interface TaskDao {
     suspend fun getTasks(userId: String): List<TodoTask>
     suspend fun updateTask(userId: String, task: TodoTask)
     suspend fun deleteTask(userId: String, taskId: String)
+    suspend fun deleteAllTasks(userId: String)
     fun observeTasksRealtime(userId: String): Flow<List<TodoTask>>
 }
 
@@ -124,5 +125,15 @@ class TodoTasksDao : TaskDao {
             }
         }
 
+    }
+
+    override suspend fun deleteAllTasks(userId: String) {
+        val documentRef = db.collection("users").document(userId)
+
+        documentRef.set(TodoTasksCollection()).addOnSuccessListener {
+            Log.d(TAG, "All tasks deleted for user: $userId")
+        }.addOnFailureListener { e ->
+            Log.w(TAG, "Error deleting tasks", e)
+        }
     }
 }

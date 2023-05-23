@@ -1,5 +1,6 @@
 package uni.digi2.dotonotes.ui.screens.tasks
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
@@ -26,6 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -45,14 +47,19 @@ import java.util.Date
 fun CompletedTasksScreen(viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoTasksDao()))) {
     val tasks by viewModel.tasks.collectAsState()
     val showDeleteDialog = remember { mutableStateOf("") }
-
     val auth = FirebaseAuth.getInstance()
 
     Scaffold(
         content = {
             it.calculateBottomPadding()
             Column {
-                Text("Completed ToDo List", style = MaterialTheme.typography.headlineLarge)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Completed ToDo List", style = MaterialTheme.typography.headlineLarge)
+                }
                 Spacer(modifier = Modifier.height(16.dp))
                 LazyColumn {
                     items(tasks.filter { item -> item.completed }) { task ->
@@ -66,30 +73,54 @@ fun CompletedTasksScreen(viewModel: TodoViewModel = TodoViewModel(TaskRepository
                                     )
                                 }
                             },
-                            showDeleteDialog = {showDeleteDialog.value = task.id}
+                            showDeleteDialog = { showDeleteDialog.value = task.id }
                         )
                     }
+                }
+                Button(
+                    onClick = {
+                        if (tasks.any { item -> item.completed }) {
+                            showDeleteDialog.value = "all"
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .height(56.dp),
+                    enabled = tasks.any { item -> item.completed }
+                ) {
+                    Text("Delete All")
                 }
             }
         }
     )
 
     if (showDeleteDialog.value != "") {
-        DeleteTaskDialog(
-            tasks.first { it.id == showDeleteDialog.value },
-            onTaskDeleted = { deletedTask ->
-                auth.currentUser?.let { it1 ->
-                    viewModel.deleteTask(
-                        it1.uid,
-                        deletedTask.id
-                    )
-                }
-            },
-            onDismiss = { showDeleteDialog.value = "" }
-        )
+        if (showDeleteDialog.value == "all") {
+            DeleteAllCompletedTasksDialog(
+                onTasksDeleted = {
+                    auth.currentUser?.let { it1 ->
+                        viewModel.deleteAllTasks(it1.uid)
+                    }
+                },
+                onDismiss = { showDeleteDialog.value = "" }
+            )
+        } else {
+            DeleteTaskDialog(
+                tasks.first { it.id == showDeleteDialog.value },
+                onTaskDeleted = { deletedTask ->
+                    auth.currentUser?.let { it1 ->
+                        viewModel.deleteTask(
+                            it1.uid,
+                            deletedTask.id
+                        )
+                    }
+                },
+                onDismiss = { showDeleteDialog.value = "" }
+            )
+        }
     }
 }
-
 
 @Composable
 fun CompletedTaskItem(
@@ -126,4 +157,37 @@ fun CompletedTaskItem(
             Icon(Icons.Default.Delete, contentDescription = "Delete Task")
         }
     }
+}
+
+@Composable
+fun DeleteAllCompletedTasksDialog(
+    onTasksDeleted: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = "Delete All Completed Tasks")
+        },
+        text = {
+            Text(text = "Are you sure you want to delete all completed tasks?")
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    onTasksDeleted()
+                    onDismiss()
+                }
+            ) {
+                Text("Delete All")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismiss
+            ) {
+                Text("Cancel")
+            }
+        }
+    )
 }
