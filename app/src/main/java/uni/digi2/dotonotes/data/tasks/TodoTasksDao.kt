@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
+import uni.digi2.dotonotes.data.categories.TaskCategory
+import java.time.LocalDateTime
 import java.util.Date
 
 
@@ -23,11 +25,13 @@ data class TodoTask(
     val priority: Int = 0,
     val createdOn: Date = Date(),
     val checkedOn: Date? = null,
+    val dueTo: Date? = null,
     val completed: Boolean = false
 )
 
 data class TodoTasksCollection(
-    val tasks: MutableList<TodoTask> = mutableListOf()
+    val tasks: MutableList<TodoTask> = mutableListOf(),
+    val categories: MutableList<TaskCategory> = mutableListOf()
 )
 
 interface TaskDao {

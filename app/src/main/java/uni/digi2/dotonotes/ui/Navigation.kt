@@ -9,6 +9,7 @@ import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -29,6 +30,7 @@ import com.google.firebase.auth.FirebaseAuth
 import uni.digi2.dotonotes.R
 import uni.digi2.dotonotes.ui.screens.authorization.FirebaseUIAuthScreen
 import uni.digi2.dotonotes.ui.screens.authorization.AuthScreen
+import uni.digi2.dotonotes.ui.screens.categories.CategoriesListScreen
 import uni.digi2.dotonotes.ui.screens.home.HomeScreen
 import uni.digi2.dotonotes.ui.screens.profile.ProfileScreen
 import uni.digi2.dotonotes.ui.screens.tasks.TodoListScreen
@@ -52,7 +54,10 @@ fun AppNavHost(navController: NavController) {
             })
         }
         composable(Screen.Tasks.route) {
-            TodoListScreen()
+            TodoListScreen(navController)
+        }
+        composable(Screen.Categories.route) {
+            CategoriesListScreen()
         }
         composable(Screen.Auth.route) {
             AuthScreen(navController)
@@ -68,7 +73,7 @@ fun BottomNavigationApp(navController: NavController) {
     val items = listOf(
         Screen.Home,
         Screen.Tasks,
-        Screen.Profile
+        Screen.Profile,
     )
 
     CompositionLocalProvider(LocalNavController provides navController) {
@@ -132,4 +137,5 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     object Tasks : Screen("tasks", "Завдання", Icons.Filled.Check)
     object Profile : Screen("profile", "Профіль", Icons.Default.Person)
     object Auth : Screen("auth", "Авторизація", Icons.Default.Person)
+    object Categories : Screen("categories", "Категорії", Icons.Default.List)
 }

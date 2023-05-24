@@ -3,6 +3,7 @@ package uni.digi2.dotonotes.ui.screens.tasks
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -29,6 +30,9 @@ import androidx.compose.ui.unit.dp
 import uni.digi2.dotonotes.data.tasks.TodoTask
 import java.util.Date
 
+import org.ocpsoft.prettytime.PrettyTime
+import java.time.LocalDateTime
+
 enum class TaskPriority(val priority: Int) {
     None(100),
     High(1),
@@ -54,6 +58,12 @@ enum class TaskPriorityColor(val rgb: Color, val priority: TaskPriority) {
     }
 }
 
+
+fun formatDateToText(date: Date): String {
+    val prettyTime = PrettyTime()
+    return prettyTime.format(date)
+}
+
 @Composable
 fun TodoTaskItem(
     task: TodoTask,
@@ -77,7 +87,7 @@ fun TodoTaskItem(
                 .background(color = TaskPriorityColor.getByPriority(TaskPriority.getByValue(task.priority)).rgb)
         )
         Checkbox(
-            modifier = Modifier.scale(scale = 1.2f),
+            modifier = Modifier.scale(scale = 1.25f),
             checked = task.completed,
             onCheckedChange = { check ->
                 onTaskUpdate(
@@ -89,11 +99,20 @@ fun TodoTaskItem(
             }
         )
         Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = task.title,
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.weight(1f)
-        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = task.title,
+                style = MaterialTheme.typography.headlineMedium,
+            )
+            task.dueTo?.let { dueTo ->
+                Text(
+                    text = formatDateToText(dueTo) ,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+        }
         IconButton(
             onClick = showEditDialog
         ) {
