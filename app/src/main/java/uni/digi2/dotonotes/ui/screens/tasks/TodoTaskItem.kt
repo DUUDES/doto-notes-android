@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import uni.digi2.dotonotes.data.tasks.TodoTask
 import java.util.Date
 
@@ -56,6 +58,7 @@ enum class TaskPriorityColor(val rgb: Color, val priority: TaskPriority) {
 
 @Composable
 fun TodoTaskItem(
+    navController: NavController,
     task: TodoTask,
     onTaskUpdate: (TodoTask) -> Unit,
     showDeleteDialog: () -> Unit,
@@ -94,6 +97,13 @@ fun TodoTaskItem(
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.weight(1f)
         )
+        IconButton(
+            onClick = {
+                navController.navigate("task_details/${task.id}")
+            }
+        ) {
+            Icon(Icons.Default.Info, contentDescription = "Task Details")
+        }
         IconButton(
             onClick = showEditDialog
         ) {
