@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
@@ -29,6 +30,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -46,13 +48,17 @@ import com.google.firebase.auth.FirebaseAuth
 import uni.digi2.dotonotes.data.tasks.TaskRepository
 import uni.digi2.dotonotes.data.tasks.TodoTask
 import uni.digi2.dotonotes.data.tasks.TodoTasksDao
+import uni.digi2.dotonotes.ui.Screen
 
 import uni.digi2.dotonotes.ui.Screen
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TodoListScreen(navController: NavController, viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoTasksDao()))) {
+fun TodoListScreen(
+    navController: NavController,
+    viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoTasksDao()))
+) {
     val tasks by viewModel.tasks.collectAsState()
     val showCreateDialog = remember { mutableStateOf(false) }
     val showEditDialog = remember { mutableStateOf("") }
@@ -60,19 +66,32 @@ fun TodoListScreen(navController: NavController, viewModel: TodoViewModel = Todo
 
     val auth = FirebaseAuth.getInstance()
 
+
     Scaffold(
         topBar = {
             TopAppBar(
+                actions = {
+                    IconButton(onClick = { navController.navigate(Screen.Categories.route) }) {
+                        Icon(
+                            Icons.Default.List,
+                            contentDescription = "Categories",
+                            modifier = Modifier.size(48.dp)
+                        )
+                    }
+                },
                 title = {
                     Text("Todos List", style = MaterialTheme.typography.headlineLarge)
                 },
-                modifier = Modifier.background(color = MaterialTheme.colorScheme.primary))
+                modifier = Modifier.background(color = MaterialTheme.colorScheme.primary)
+            )
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { showCreateDialog.value = true },
                 shape = androidx.compose.foundation.shape.CircleShape,
-                modifier = Modifier.padding(16.dp).size(64.dp)
+                modifier = Modifier
+                    .padding(16.dp)
+                    .size(64.dp)
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add", modifier = Modifier.size(24.dp))
             }
@@ -80,8 +99,9 @@ fun TodoListScreen(navController: NavController, viewModel: TodoViewModel = Todo
         content = {
             it.calculateBottomPadding()
             Column {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(48.dp))
                 LazyColumn(modifier = Modifier.weight(1f)) {
+
                     val ordered = tasks
                         .filter { item -> !item.completed }
                         .sortedBy { task -> task.priority }

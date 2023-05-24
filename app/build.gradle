@@ -55,8 +55,11 @@ dependencies {
     implementation 'androidx.navigation:navigation-compose:2.6.0-rc01'
     implementation 'androidx.compose.material:material:1.4.3'
     implementation "androidx.compose.material3:material3:$material3_version"
+    implementation 'com.github.commandiron:WheelPickerCompose:1.1.10'
     implementation 'androidx.compose.ui:ui:1.4.3'
     implementation 'androidx.compose.ui:ui-tooling:1.4.3'
+    implementation 'org.ocpsoft.prettytime:prettytime:5.0.0.Final'
+
 
     implementation platform('com.google.firebase:firebase-bom:31.0.0')
     implementation 'com.google.firebase:firebase-auth-ktx'
