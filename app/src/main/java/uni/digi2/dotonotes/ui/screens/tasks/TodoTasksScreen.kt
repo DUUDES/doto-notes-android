@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.google.firebase.auth.FirebaseAuth
 import uni.digi2.dotonotes.data.tasks.TaskRepository
+import uni.digi2.dotonotes.data.tasks.TodoTask
 import uni.digi2.dotonotes.data.tasks.TodoTasksDao
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -158,129 +159,6 @@ fun TodoListScreen(viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoT
                 },
                 onDismiss = { showDeleteDialog.value = "" }
             )
-        }
-    }
-}
-
-@Composable
-fun DeleteAllTasksDialog(
-    onTasksDeleted: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Delete All Tasks") },
-        text = { Text("Are you sure you want to delete all tasks?") },
-        confirmButton = {
-            Button(
-                onClick = {
-                    onTasksDeleted()
-                    onDismiss()
-                }
-            ) {
-                Text("Yes!")
-            }
-        },
-        dismissButton = {
-            Button(
-                onClick = { onDismiss() }
-            ) {
-                Text("Cancel")
-            }
-        }
-    )
-}
-
-@Composable
-fun DeleteTaskDialog(
-    todoTask: TodoTask,
-    onTaskDeleted: (TodoTask) -> Unit,
-    onDismiss: () -> Unit
-) = DeleteDialog(
-    task = todoTask,
-    label = "Delete ToDo",
-    onSubmit = onTaskDeleted,
-    onDismiss = onDismiss
-)
-
-
-@Composable
-fun DeleteDialog(
-    task: TodoTask?,
-    label: String,
-    onSubmit: (TodoTask) -> Unit,
-    onDismiss: () -> Unit
-) {
-    var taskTitle by remember { mutableStateOf(task?.title ?: "") }
-    var taskDescription by remember { mutableStateOf(task?.description ?: "") }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(label) },
-        text = {
-           Text(text =  "Are you sure you want to delete  \"${task?.title ?: "this"}\"  task?")
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    if (taskTitle.isNotBlank()) {
-                        onSubmit(task?.copy(title = taskTitle, description = taskDescription) ?: TodoTask(title = taskTitle, description = taskDescription))
-                        onDismiss()
-                    }
-                }
-            ) {
-                Text("Yes!")
-            }
-        },
-        dismissButton = {
-            Button(
-                onClick = { onDismiss() }
-            ) {
-                Text("Cancel")
-            }
-        }
-    )
-}
-
-@Composable
-fun TodoTaskItem(
-    task: TodoTask,
-    onTaskUpdate: (TodoTask) -> Unit,
-    showEditDialog: () -> Unit,
-    showDeleteDialog: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Checkbox(
-            checked = task.completed,
-            onCheckedChange = { check ->
-                onTaskUpdate(
-                    task.copy(
-                        completed = check,
-                        checkedOn = if (check) Date() else task.checkedOn
-                    )
-                )
-            }
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = task.title,
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.weight(1f)
-        )
-        IconButton(
-            onClick = showEditDialog
-        ) {
-            Icon(Icons.Default.Edit, contentDescription = "Edit Task")
-        }
-        IconButton(
-            onClick = showDeleteDialog
-        ) {
-            Icon(Icons.Default.Delete, contentDescription = "Delete Task")
         }
     }
 }
