@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import uni.digi2.dotonotes.data.tasks.TaskRepository
 import uni.digi2.dotonotes.data.tasks.TodoTask
 
@@ -52,6 +53,19 @@ class TodoViewModel(private val taskRepository: TaskRepository) : ViewModel() {
         viewModelScope.launch {
             taskRepository.deleteTask(userId, taskId)
             getTasks(userId)
+        }
+    }
+
+    fun deleteAllTasks(userId: String) {
+        viewModelScope.launch {
+            taskRepository.deleteAllTasks(userId)
+            getTasks(userId)
+        }
+    }
+
+    fun getTaskById(userId: String, taskId: String): TodoTask? {
+        return runBlocking {
+            taskRepository.getTaskById(userId, taskId)
         }
     }
 }

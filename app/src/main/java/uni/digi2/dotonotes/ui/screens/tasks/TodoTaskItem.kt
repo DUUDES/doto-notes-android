@@ -68,7 +68,7 @@ fun formatDateToText(date: Date): String {
 fun TodoTaskItem(
     task: TodoTask,
     onTaskUpdate: (TodoTask) -> Unit,
-    onTaskDelete: (TodoTask) -> Unit,
+    showDeleteDialog: () -> Unit,
     showEditDialog: () -> Unit
 ) {
     Row(
@@ -123,7 +123,7 @@ fun TodoTaskItem(
             )
         }
         IconButton(
-            onClick = { onTaskDelete(task) }
+            onClick = showDeleteDialog
         ) {
             Icon(
                 Icons.Default.Delete,
@@ -133,3 +133,4 @@ fun TodoTaskItem(
         }
     }
 }
+

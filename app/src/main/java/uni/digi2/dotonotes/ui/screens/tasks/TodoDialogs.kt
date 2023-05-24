@@ -175,3 +175,85 @@ fun TaskDialog(
         }
     )
 }
+
+
+@Composable
+fun DeleteAllTasksDialog(
+    onTasksDeleted: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Delete All Tasks") },
+        text = { Text("Are you sure you want to delete all tasks?") },
+        confirmButton = {
+            Button(
+                onClick = {
+                    onTasksDeleted()
+                    onDismiss()
+                }
+            ) {
+                Text("Yes!")
+            }
+        },
+        dismissButton = {
+            Button(
+                onClick = { onDismiss() }
+            ) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+@Composable
+fun DeleteTaskDialog(
+    todoTask: TodoTask,
+    onTaskDeleted: (TodoTask) -> Unit,
+    onDismiss: () -> Unit
+) = DeleteDialog(
+    task = todoTask,
+    label = "Delete ToDo",
+    onSubmit = onTaskDeleted,
+    onDismiss = onDismiss
+)
+
+
+@Composable
+fun DeleteDialog(
+    task: TodoTask?,
+    label: String,
+    onSubmit: (TodoTask) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var taskTitle by remember { mutableStateOf(task?.title ?: "") }
+    var taskDescription by remember { mutableStateOf(task?.description ?: "") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(label) },
+        text = {
+            Text(text =  "Are you sure you want to delete  \"${task?.title ?: "this"}\"  task?")
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (taskTitle.isNotBlank()) {
+                        onSubmit(task?.copy(title = taskTitle, description = taskDescription) ?: TodoTask(title = taskTitle, description = taskDescription))
+                        onDismiss()
+                    }
+                }
+            ) {
+                Text("Yes!")
+            }
+        },
+        dismissButton = {
+            Button(
+                onClick = { onDismiss() }
+            ) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
