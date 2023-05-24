@@ -1,5 +1,6 @@
 package uni.digi2.dotonotes.ui.screens.tasks
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
@@ -61,11 +62,17 @@ fun TodoListScreen(viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoT
         },
         content = {
             it.calculateBottomPadding()
-            Column {
-                Text("Todo List", style = MaterialTheme.typography.headlineLarge)
+            Column() {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Todo List", style = MaterialTheme.typography.headlineLarge)
+                }
                 Spacer(modifier = Modifier.height(16.dp))
-                LazyColumn {
-                    items(tasks) { task ->
+                LazyColumn(modifier = Modifier.weight(1f)) {
+                    items(tasks.filter { item -> !item.completed }) { task ->
                         TodoTaskItem(
                             task = task,
                             onTaskUpdate = { updatedTask ->
@@ -76,19 +83,25 @@ fun TodoListScreen(viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoT
                                     )
                                 }
                             },
-                            onTaskDelete = { deletedTask ->
-                                auth.currentUser?.let { it1 ->
-                                    viewModel.deleteTask(
-                                        it1.uid,
-                                        deletedTask.id
-                                    )
-                                }
-                            },
                             showEditDialog = { showEditDialog.value = task.id },
-                            showDeleteDialog = {showDeleteDialog.value = task.id}
+                            showDeleteDialog = { showDeleteDialog.value = task.id }
                         )
                     }
                 }
+//                Button(
+//                    onClick = {
+//                        if (tasks.isNotEmpty()) {
+//                            showDeleteDialog.value = "all"
+//                        }
+//                    },
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(16.dp)
+//                        .height(56.dp),
+//                    enabled = tasks.isNotEmpty()
+//                ) {
+//                    Text("Delete All")
+//                }
             }
         }
     )
@@ -122,19 +135,59 @@ fun TodoListScreen(viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoT
     }
 
     if (showDeleteDialog.value != "") {
-        DeleteTaskDialog(
-            tasks.first { it.id == showDeleteDialog.value },
-            onTaskDeleted = { deletedTask ->
-                auth.currentUser?.let { it1 ->
-                    viewModel.deleteTask(
-                        it1.uid,
-                        deletedTask.id
-                    )
-                }
-            },
-            onDismiss = { showDeleteDialog.value = "" }
-        )
+        if (showDeleteDialog.value == "all") {
+            DeleteAllTasksDialog(
+                onTasksDeleted = {
+                    auth.currentUser?.let { it1 ->
+                        viewModel.deleteAllTasks(it1.uid)
+                    }
+                },
+                onDismiss = { showDeleteDialog.value = "" }
+            )
+        } else {
+            DeleteTaskDialog(
+                tasks.first { it.id == showDeleteDialog.value },
+                onTaskDeleted = { deletedTask ->
+                    auth.currentUser?.let { it1 ->
+                        viewModel.deleteTask(
+                            it1.uid,
+                            deletedTask.id
+                        )
+                    }
+                },
+                onDismiss = { showDeleteDialog.value = "" }
+            )
+        }
     }
+}
+
+@Composable
+fun DeleteAllTasksDialog(
+    onTasksDeleted: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Delete All Tasks") },
+        text = { Text("Are you sure you want to delete all tasks?") },
+        confirmButton = {
+            Button(
+                onClick = {
+                    onTasksDeleted()
+                    onDismiss()
+                }
+            ) {
+                Text("Yes!")
+            }
+        },
+        dismissButton = {
+            Button(
+                onClick = { onDismiss() }
+            ) {
+                Text("Cancel")
+            }
+        }
+    )
 }
 
 @Composable
@@ -266,7 +319,6 @@ fun TaskDialog(
 fun TodoTaskItem(
     task: TodoTask,
     onTaskUpdate: (TodoTask) -> Unit,
-    onTaskDelete: (TodoTask) -> Unit,
     showEditDialog: () -> Unit,
     showDeleteDialog: () -> Unit
 ) {
