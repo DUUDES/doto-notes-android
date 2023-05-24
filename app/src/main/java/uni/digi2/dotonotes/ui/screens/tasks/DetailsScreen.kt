@@ -36,25 +36,80 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.runBlocking
 import uni.digi2.dotonotes.data.tasks.TaskRepository
 import uni.digi2.dotonotes.data.tasks.TodoTask
 import uni.digi2.dotonotes.data.tasks.TodoTasksDao
+import uni.digi2.dotonotes.ui.viewModel
 import java.util.Date
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskDetailsScreen(task: TodoTask){
+fun TaskDetailsScreen(task: TodoTask) {
+    val taskCategory by remember { mutableStateOf(task.categoryId) }
+    val categories =
+        runBlocking { viewModel.getCategories(FirebaseAuth.getInstance().currentUser!!.uid) }
+
     Scaffold(
         content = {
             it.calculateBottomPadding()
             Column {
-                Text(text = task.title, style = MaterialTheme.typography.titleLarge)
-                Text(text = task.description, style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = "Task description",
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(16.dp)
+                )
+                Text(
+                    text = "Title: " + task.title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(16.dp)
+                )
+                Text(
+                    text = "Description: " + task.description,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(16.dp)
+                )
+                Text(
+                    text = "Priority: " + TaskPriority.getByValue(task.priority).toString(),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(16.dp)
+                )
+                Text(
+                    text = "Category: ${
+                        taskCategory.let { id ->
+                            categories.firstOrNull { category -> category.id == id }
+                        }?.name ?: "None"
+                    }",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(16.dp)
+                )
+                Text(
+                    text = "Created on: " + task.createdOn.toString(),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(16.dp)
+                )
+                Text(
+                    text = "Checked on: ${task.checkedOn?.toString() ?: ""}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(16.dp)
+                )
+                Text(
+                    text = "Due to: ${task.dueTo?.toString() ?: ""}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(16.dp)
+                )
+                Text(
+                    text = "Is completed: " + task.completed.toString(),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(16.dp)
+                )
 
             }
         }
     )
 
 }
+
+
         
