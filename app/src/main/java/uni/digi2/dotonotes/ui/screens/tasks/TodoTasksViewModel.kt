@@ -54,4 +54,11 @@ class TodoViewModel(private val taskRepository: TaskRepository) : ViewModel() {
             getTasks(userId)
         }
     }
+
+    fun deleteAllTasks(userId: String) {
+        viewModelScope.launch {
+            taskRepository.deleteAllTasks(userId)
+            getTasks(userId)
+        }
+    }
 }
