@@ -30,27 +30,27 @@ import uni.digi2.dotonotes.data.tasks.TodoTask
 import java.util.Date
 
 enum class TaskPriority(val priority: Int) {
-    NONE(100),
-    HIGH(1),
-    MEDIUM(2),
-    LOW(3),;
+    None(100),
+    High(1),
+    Medium(2),
+    Low(3),;
 
     companion object {
         private val VALUES = values()
-        fun getByValue(value: Int) = VALUES.firstOrNull { it.priority == value } ?: NONE
+        fun getByValue(value: Int) = VALUES.firstOrNull { it.priority == value } ?: None
     }
 }
 
 enum class TaskPriorityColor(val rgb: Color, val priority: TaskPriority) {
-    GRAY(Color.LightGray.copy(alpha = 0.35f), TaskPriority.NONE),
-    RED(Color.Red.copy(alpha = 0.35f), TaskPriority.HIGH),
-    YELLOW(Color.Yellow.copy(alpha = 0.35f), TaskPriority.MEDIUM),
-    GREEN(Color.Green.copy(alpha = 0.35f), TaskPriority.LOW);
+        Gray(Color.LightGray.copy(alpha = 0.35f), TaskPriority.None),
+        Red(Color.Red.copy(alpha = 0.35f), TaskPriority.High),
+        Yellow(Color.Yellow.copy(alpha = 0.35f), TaskPriority.Medium),
+        Green(Color.Green.copy(alpha = 0.35f), TaskPriority.Low);
 
-    companion object {
+        companion object {
         private val VALUES = TaskPriorityColor.values()
         fun getByPriority(value: TaskPriority): TaskPriorityColor =
-            VALUES.firstOrNull { it.priority == value } ?: GRAY
+            VALUES.firstOrNull { it.priority == value } ?: Gray
     }
 }
 
