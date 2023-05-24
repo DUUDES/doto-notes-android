@@ -19,6 +19,9 @@ class TaskRepository(private val taskDao: TaskDao) {
         taskDao.deleteTask(userId, taskId)
     }
 
+    suspend fun deleteAllTasks(userId: String) {
+        taskDao.deleteAllTasks(userId)
+    }
     fun observeTasksRealtime(userId: String) : Flow<List<TodoTask>> {
         return taskDao.observeTasksRealtime(userId)
     }
