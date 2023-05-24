@@ -20,6 +20,7 @@ import java.util.Date
 
 data class TodoTask(
     var id: String = "",
+    var categoryId: String? = null,
     val title: String = "",
     val description: String = "",
     val priority: Int = 0,

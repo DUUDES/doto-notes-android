@@ -43,13 +43,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.runBlocking
+import uni.digi2.dotonotes.R
+import uni.digi2.dotonotes.data.categories.CategoriesDao
 import uni.digi2.dotonotes.data.tasks.TaskRepository
 import uni.digi2.dotonotes.data.tasks.TodoTask
 import uni.digi2.dotonotes.data.tasks.TodoTasksDao
-import uni.digi2.dotonotes.ui.Screen
-
 import uni.digi2.dotonotes.ui.Screen
 import java.util.Date
 
@@ -57,23 +62,30 @@ import java.util.Date
 @Composable
 fun TodoListScreen(
     navController: NavController,
-    viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoTasksDao()))
+    viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoTasksDao()), CategoriesDao())
 ) {
     val tasks by viewModel.tasks.collectAsState()
     val showCreateDialog = remember { mutableStateOf(false) }
     val showEditDialog = remember { mutableStateOf("") }
     val showDeleteDialog = remember { mutableStateOf("") }
 
+
     val auth = FirebaseAuth.getInstance()
 
+    val fetchedCategories = runBlocking { viewModel.getCategories(auth.currentUser!!.uid) }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 actions = {
+                    val context = LocalContext.current
+                    val bitmap = ContextCompat.getDrawable(context, R.drawable.baseline_category_24)
+                        ?.toBitmap()
+                        ?.asImageBitmap()!!
+
                     IconButton(onClick = { navController.navigate(Screen.Categories.route) }) {
                         Icon(
-                            Icons.Default.List,
+                            bitmap,
                             contentDescription = "Categories",
                             modifier = Modifier.size(48.dp)
                         )
@@ -104,7 +116,7 @@ fun TodoListScreen(
 
                     val ordered = tasks
                         .filter { item -> !item.completed }
-                        .sortedBy { task -> task.priority }
+                        .sortedBy { TasksOrderBy.DueDate }
 
                     items(ordered) { task ->
                         TodoTaskItem(
@@ -151,7 +163,8 @@ fun TodoListScreen(
                     )
                 }
             },
-            onDismiss = { showCreateDialog.value = false }
+            onDismiss = { showCreateDialog.value = false },
+            categories = fetchedCategories
         )
     } else if (showEditDialog.value != "" && tasks.any { it.id == showEditDialog.value }) {
         UpdateTaskDialog(
@@ -164,11 +177,10 @@ fun TodoListScreen(
                     )
                 }
             },
-            onDismiss = { showEditDialog.value = "" }
+            onDismiss = { showEditDialog.value = "" },
+            categories = fetchedCategories
         )
-    }
-
-    if (showDeleteDialog.value != "") {
+    } else if (showDeleteDialog.value != "") {
         if (showDeleteDialog.value == "all") {
             DeleteAllTasksDialog(
                 onTasksDeleted = {

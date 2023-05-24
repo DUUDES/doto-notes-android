@@ -46,7 +46,10 @@ import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CompletedTasksScreen(navController: NavController, viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoTasksDao()))) {
+fun CompletedTasksScreen(
+    navController: NavController,
+    viewModel: TodoViewModel
+) {
     val tasks by viewModel.tasks.collectAsState()
     val showDeleteDialog = remember { mutableStateOf("") }
     val auth = FirebaseAuth.getInstance()

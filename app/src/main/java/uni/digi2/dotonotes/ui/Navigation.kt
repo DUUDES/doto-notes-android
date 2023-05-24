@@ -37,6 +37,7 @@ import uni.digi2.dotonotes.data.tasks.TodoTasksDao
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import uni.digi2.dotonotes.R
+import uni.digi2.dotonotes.data.categories.CategoriesDao
 import uni.digi2.dotonotes.ui.screens.authorization.FirebaseUIAuthScreen
 import uni.digi2.dotonotes.ui.screens.authorization.AuthScreen
 import uni.digi2.dotonotes.ui.screens.categories.CategoriesListScreen
@@ -47,7 +48,7 @@ import uni.digi2.dotonotes.ui.screens.tasks.TaskDetailsScreen
 import uni.digi2.dotonotes.ui.screens.tasks.TodoListScreen
 import uni.digi2.dotonotes.ui.screens.tasks.TodoViewModel
 
-val viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoTasksDao()))
+val viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoTasksDao()), CategoriesDao())
 @Composable
 fun AppNavHost(navController: NavController) {
 
@@ -71,7 +72,7 @@ fun AppNavHost(navController: NavController) {
             CategoriesListScreen()
         }
         composable(Screen.CompletedTasks.route) {
-            CompletedTasksScreen(navController)
+            CompletedTasksScreen(navController, viewModel)
         }
         composable(Screen.Auth.route) {
             AuthScreen(navController)

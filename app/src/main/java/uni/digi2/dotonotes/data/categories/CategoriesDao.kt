@@ -16,9 +16,7 @@ import kotlinx.coroutines.tasks.await
 import uni.digi2.dotonotes.data.tasks.TodoTasksCollection
 import java.util.Date
 
-
-
-data class TaskCategory (
+data class TaskCategory(
     var id: String = "",
     val name: String = "",
     val createdOn: Date = Date(),
@@ -89,6 +87,10 @@ class CategoriesDao : ICategoriesDao {
         documentRef.get().addOnSuccessListener {
             val data = it.toObject(TodoTasksCollection::class.java) ?: TodoTasksCollection()
 
+            data.tasks
+                .filter { task -> task.categoryId == categoryId }
+                .forEach { task -> task.categoryId = null }
+
             data.categories.removeIf { category -> category.id == categoryId }
 
             documentRef.set(data).addOnSuccessListener {
@@ -99,23 +101,26 @@ class CategoriesDao : ICategoriesDao {
         }
     }
 
-    override fun observeCategoriesRealtime(userId: String): Flow<List<TaskCategory>> = callbackFlow {
-        val documentRef = db.collection("users").document(userId)
+    override fun observeCategoriesRealtime(userId: String): Flow<List<TaskCategory>> =
+        callbackFlow {
+            val documentRef = db.collection("users").document(userId)
 
-        val listenerRegistration = documentRef.addSnapshotListener(EventListener { snapshot, error ->
-            if (error != null) {
-                close(error)
-                return@EventListener
-            }
+            val listenerRegistration =
+                documentRef.addSnapshotListener(EventListener { snapshot, error ->
+                    if (error != null) {
+                        close(error)
+                        return@EventListener
+                    }
 
-            val categories = snapshot?.toObject(TodoTasksCollection::class.java)?.categories ?: emptyList()
-            try {
-                trySend(categories).isSuccess
-            } catch (exception: Exception) {
-                close(exception)
-            }
-        })
+                    val categories = snapshot?.toObject(TodoTasksCollection::class.java)?.categories
+                        ?: emptyList()
+                    try {
+                        trySend(categories).isSuccess
+                    } catch (exception: Exception) {
+                        close(exception)
+                    }
+                })
 
-        awaitClose { listenerRegistration.remove() }
-    }
+            awaitClose { listenerRegistration.remove() }
+        }
 }

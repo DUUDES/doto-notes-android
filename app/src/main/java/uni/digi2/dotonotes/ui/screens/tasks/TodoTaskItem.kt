@@ -33,7 +33,6 @@ import uni.digi2.dotonotes.data.tasks.TodoTask
 import java.util.Date
 
 import org.ocpsoft.prettytime.PrettyTime
-import java.time.LocalDateTime
 
 enum class TaskPriority(val priority: Int) {
     None(100),
@@ -45,6 +44,10 @@ enum class TaskPriority(val priority: Int) {
         private val VALUES = values()
         fun getByValue(value: Int) = VALUES.firstOrNull { it.priority == value } ?: None
     }
+}
+
+enum class TasksOrderBy(val rule: (TodoTask) -> Unit) {
+    DueDate({ it.dueTo })
 }
 
 enum class TaskPriorityColor(val rgb: Color, val priority: TaskPriority) {

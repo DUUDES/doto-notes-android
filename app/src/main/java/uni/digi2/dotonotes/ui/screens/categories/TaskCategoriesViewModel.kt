@@ -31,21 +31,21 @@ class TaskCategoriesViewModel(private val categoriesDao: ICategoriesDao) : ViewM
         }
     }
 
-    fun addTask(userId: String, category: TaskCategory) {
+    fun addCategory(userId: String, category: TaskCategory) {
         viewModelScope.launch {
             categoriesDao.addCategory(userId, category)
             getCategories(userId)
         }
     }
 
-    fun updateTask(userId: String, category: TaskCategory) {
+    fun updateCategory(userId: String, category: TaskCategory) {
         viewModelScope.launch {
             categoriesDao.updateCategory(userId, category)
             getCategories(userId)
         }
     }
 
-    fun deleteTask(userId: String, categoryId: String) {
+    fun deleteCategory(userId: String, categoryId: String) {
         viewModelScope.launch {
             categoriesDao.deleteCategory(userId, categoryId)
             getCategories(userId)

@@ -10,10 +10,15 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import uni.digi2.dotonotes.data.categories.ICategoriesDao
+import uni.digi2.dotonotes.data.categories.TaskCategory
 import uni.digi2.dotonotes.data.tasks.TaskRepository
 import uni.digi2.dotonotes.data.tasks.TodoTask
 
-class TodoViewModel(private val taskRepository: TaskRepository) : ViewModel() {
+class TodoViewModel(
+    private val taskRepository: TaskRepository,
+    private val categoriesDao: ICategoriesDao
+    ) : ViewModel() {
     private val _tasks = MutableStateFlow<List<TodoTask>>(emptyList())
     val tasks: StateFlow<List<TodoTask>> = _tasks
 
@@ -27,6 +32,10 @@ class TodoViewModel(private val taskRepository: TaskRepository) : ViewModel() {
                     }
             }
         }
+    }
+
+    suspend fun getCategories(userId: String) : List<TaskCategory> {
+        return categoriesDao.getCategories(userId)
     }
 
     private fun getTasks(userId: String) {

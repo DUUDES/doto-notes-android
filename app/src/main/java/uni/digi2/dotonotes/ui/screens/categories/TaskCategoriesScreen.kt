@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -26,6 +27,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
 import uni.digi2.dotonotes.data.categories.CategoriesDao
+import uni.digi2.dotonotes.data.categories.TaskCategory
+import uni.digi2.dotonotes.ui.screens.tasks.CreateTaskDialog
+import uni.digi2.dotonotes.ui.screens.tasks.TodoTaskItem
+import uni.digi2.dotonotes.ui.screens.tasks.UpdateTaskDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,13 +48,16 @@ fun CategoriesListScreen(viewModel: TaskCategoriesViewModel = TaskCategoriesView
                 title = {
                     Text("Categories List", style = MaterialTheme.typography.headlineLarge)
                 },
-                modifier = Modifier.background(color = MaterialTheme.colorScheme.primary))
+                modifier = Modifier.background(color = MaterialTheme.colorScheme.primary)
+            )
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { showCreateDialog.value = true },
                 shape = CircleShape,
-                modifier = Modifier.padding(16.dp).size(64.dp)
+                modifier = Modifier
+                    .padding(16.dp)
+                    .size(64.dp)
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add", modifier = Modifier.size(24.dp))
             }
@@ -57,12 +65,56 @@ fun CategoriesListScreen(viewModel: TaskCategoriesViewModel = TaskCategoriesView
         content = {
             it.calculateBottomPadding()
             Column {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(48.dp))
                 LazyColumn {
-
+                    items(categories) { category ->
+                        TaskCategoryItem(
+                            category = category,
+                            onCategoryUpdate = { updatedCategory ->
+                                auth.currentUser?.let { user ->
+                                    viewModel.updateCategory(user.uid, updatedCategory)
+                                }
+                            },
+                            showEditDialog = { showEditDialog.value = category.id },
+                            onCategoryDelete = { deletedCategory ->
+                                auth.currentUser?.let { user ->
+                                    viewModel.deleteCategory(user.uid, deletedCategory.id)
+                                }
+                            }
+                        )
+                    }
                 }
             }
+
+            if (showCreateDialog.value) {
+                CreateCategoriesDialog(
+                    onCategoryCreated = { category ->
+                        auth.currentUser?.let { user ->
+                            viewModel.addCategory(
+                                user.uid,
+                                category
+                            )
+                        }
+                    },
+                    onDismiss = { showCreateDialog.value = false }
+                )
+            } else if (showEditDialog.value != "" && categories.any { category -> category.id == showEditDialog.value }) {
+                UpdateCategoriesDialog(
+                    categories.first { category -> category.id == showEditDialog.value },
+                    onTaskUpdated = { category ->
+                        auth.currentUser?.let { user ->
+                            viewModel.updateCategory(
+                                user.uid,
+                                category
+                            )
+                        }
+                    },
+                    onDismiss = { showEditDialog.value = "" }
+                )
+            }
         }
+
+
     )
 
 }
