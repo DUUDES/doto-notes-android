@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
@@ -36,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import uni.digi2.dotonotes.data.tasks.TaskRepository
 import uni.digi2.dotonotes.data.tasks.TodoTask
@@ -44,7 +46,7 @@ import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CompletedTasksScreen(viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoTasksDao()))) {
+fun CompletedTasksScreen(navController: NavController, viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoTasksDao()))) {
     val tasks by viewModel.tasks.collectAsState()
     val showDeleteDialog = remember { mutableStateOf("") }
     val auth = FirebaseAuth.getInstance()
@@ -64,6 +66,7 @@ fun CompletedTasksScreen(viewModel: TodoViewModel = TodoViewModel(TaskRepository
                 LazyColumn {
                     items(tasks.filter { item -> item.completed }) { task ->
                         CompletedTaskItem(
+                            navController = navController,
                             task = task,
                             onTaskUpdate = { updatedTask ->
                                 auth.currentUser?.let { it1 ->
@@ -124,6 +127,7 @@ fun CompletedTasksScreen(viewModel: TodoViewModel = TodoViewModel(TaskRepository
 
 @Composable
 fun CompletedTaskItem(
+    navController: NavController,
     task: TodoTask,
     onTaskUpdate: (TodoTask) -> Unit,
     showDeleteDialog: () -> Unit
@@ -151,6 +155,13 @@ fun CompletedTaskItem(
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.weight(1f)
         )
+        IconButton(
+            onClick = {
+                navController.navigate("task_details/${task.id}")
+            }
+        ) {
+            Icon(Icons.Default.Info, contentDescription = "Task Details")
+        }
         IconButton(
             onClick = showDeleteDialog
         ) {
