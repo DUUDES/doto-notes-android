@@ -105,7 +105,7 @@ fun TodoTaskItem(
                 style = MaterialTheme.typography.headlineMedium,
             )
             task.dueTo?.let { dueTo ->
-                Text(
+                if (!task.completed) Text(
                     text = formatDateToText(dueTo) ,
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.Gray,
