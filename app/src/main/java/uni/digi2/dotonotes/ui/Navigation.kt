@@ -39,6 +39,7 @@ import com.google.firebase.auth.FirebaseAuth
 import uni.digi2.dotonotes.R
 import uni.digi2.dotonotes.ui.screens.authorization.FirebaseUIAuthScreen
 import uni.digi2.dotonotes.ui.screens.authorization.AuthScreen
+import uni.digi2.dotonotes.ui.screens.categories.CategoriesListScreen
 import uni.digi2.dotonotes.ui.screens.home.HomeScreen
 import uni.digi2.dotonotes.ui.screens.profile.ProfileScreen
 import uni.digi2.dotonotes.ui.screens.tasks.CompletedTasksScreen
@@ -65,6 +66,9 @@ fun AppNavHost(navController: NavController) {
         }
         composable(Screen.Tasks.route) {
             TodoListScreen(navController)
+        }
+        composable(Screen.Categories.route) {
+            CategoriesListScreen()
         }
         composable(Screen.CompletedTasks.route) {
             CompletedTasksScreen(navController)
@@ -165,4 +169,5 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     object CompletedTasks : Screen("completedTasks", "Виконані", Icons.Filled.Done)
     object Profile : Screen("profile", "Профіль", Icons.Default.Person)
     object Auth : Screen("auth", "Авторизація", Icons.Default.Home)
+    object Categories : Screen("categories", "Категорії", Icons.Default.List)
 }
