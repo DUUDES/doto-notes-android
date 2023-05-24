@@ -21,7 +21,8 @@ import uni.digi2.dotonotes.ui.utils.Greeting
 @Composable
 fun AuthScreen(navController: NavController) {
     val providers = listOf(
-        AuthUI.IdpConfig.EmailBuilder().build(), AuthUI.IdpConfig.GoogleBuilder().build()
+        AuthUI.IdpConfig.EmailBuilder().build(),
+        AuthUI.IdpConfig.GoogleBuilder().build()
     )
 
     FirebaseUIAuthScreen(
@@ -55,7 +56,7 @@ fun FirebaseUIAuthScreen(
 
     val signInIntent = remember(signInProviders) {
         AuthUI.getInstance().createSignInIntentBuilder()
-            .setLogo(R.drawable.ic_todo_list)
+            .setLogo(R.drawable.im_round_bounded)
             .setAvailableProviders(signInProviders)
             .build()
     }

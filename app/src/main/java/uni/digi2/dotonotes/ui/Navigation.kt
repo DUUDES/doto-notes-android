@@ -24,7 +24,9 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
+import uni.digi2.dotonotes.R
 import uni.digi2.dotonotes.ui.screens.authorization.FirebaseUIAuthScreen
 import uni.digi2.dotonotes.ui.screens.authorization.AuthScreen
 import uni.digi2.dotonotes.ui.screens.home.HomeScreen
@@ -38,7 +40,7 @@ fun AppNavHost(navController: NavController) {
 
     NavHost(
         navController = navController as NavHostController,
-        startDestination = Screen.Home.route
+        startDestination = Screen.Tasks.route
     ) {
         composable(Screen.Home.route) {
             HomeScreen()
@@ -74,7 +76,7 @@ fun BottomNavigationApp(navController: NavController) {
 
             bottomBar = {
                 BottomNavigation(
-//                    backgroundColor = Color.Black, // Задаємо чорний фон для BottomNavigation
+                     // Задаємо чорний фон для BottomNavigation
                     contentColor = Color.White // Задаємо білий колір контенту (тексту та іконок)
                 ) {
                     val currentRoute = LocalNavController.current.currentDestination?.route
