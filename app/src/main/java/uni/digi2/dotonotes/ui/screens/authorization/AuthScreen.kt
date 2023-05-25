@@ -28,11 +28,43 @@ fun AuthScreen(navController: NavController) {
     FirebaseUIAuthScreen(
         signInProviders = providers,
         onSignInSuccess = {
-            navController.navigate(Screen.Home.route)
+            navController.navigate(Screen.Tasks.route)
         },
         onSignInFailure = { error -> throw error }
     )
 }
+
+//@Composable
+//fun FirebaseUIAuthScreen(
+//    signInProviders: List<AuthUI.IdpConfig>,
+//    onSignInSuccess: () -> Unit,
+//    onSignInFailure: (Exception) -> Unit
+//) {
+//    val context = LocalContext.current
+//    val signInLauncher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.StartActivityForResult()
+//    ) { result ->
+//        if (result.resultCode == Activity.RESULT_OK) {
+//            onSignInSuccess()
+//        } else {
+//            val response = IdpResponse.fromResultIntent(result.data)
+//            response?.error?.let { error ->
+//                onSignInFailure(error)
+//            }
+//        }
+//    }
+//
+//    val signInIntent = remember(signInProviders) {
+//        AuthUI.getInstance().createSignInIntentBuilder()
+//            .setLogo(R.drawable.im_round_bounded)
+//            .setAvailableProviders(signInProviders)
+//            .build()
+//    }
+//
+//    LaunchedEffect(Unit) {
+//        signInLauncher.launch(signInIntent)
+//    }
+//}
 
 @Composable
 fun FirebaseUIAuthScreen(
@@ -42,23 +74,21 @@ fun FirebaseUIAuthScreen(
 ) {
     val context = LocalContext.current
     val signInLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
+        contract = FirebaseAuthUIActivityResultContract()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             onSignInSuccess()
         } else {
-            val response = IdpResponse.fromResultIntent(result.data)
+            val response = IdpResponse.fromResultIntent(null)
             response?.error?.let { error ->
                 onSignInFailure(error)
             }
         }
     }
 
-    val signInIntent = remember(signInProviders) {
-        AuthUI.getInstance().createSignInIntentBuilder()
-            .setLogo(R.drawable.im_round_bounded)
-            .setAvailableProviders(signInProviders)
-            .build()
+    val signInIntent = remember {
+        AuthUI.getInstance().createSignInIntentBuilder().setIsSmartLockEnabled(false)
+            .setLogo(R.drawable.ic_todo_list).setAvailableProviders(signInProviders).build()
     }
 
     LaunchedEffect(Unit) {

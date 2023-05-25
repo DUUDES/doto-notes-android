@@ -62,7 +62,7 @@ fun TaskDetailsScreen(task: TodoTask) {
                 )
                 Text(
                     text = "Title: " + task.title,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(16.dp)
                 )
                 Text(
