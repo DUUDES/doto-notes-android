@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
@@ -68,6 +69,8 @@ fun TodoListScreen(
     val showCreateDialog = remember { mutableStateOf(false) }
     val showEditDialog = remember { mutableStateOf("") }
     val showDeleteDialog = remember { mutableStateOf("") }
+    val sortDropdownExpanded = remember { mutableStateOf(false) }
+    val orderByRule = remember { mutableStateOf(TasksOrderBy.Priority) }
 
 
     val auth = FirebaseAuth.getInstance()
@@ -89,6 +92,31 @@ fun TodoListScreen(
                             contentDescription = "Categories",
                             modifier = Modifier.size(48.dp)
                         )
+                    }
+
+                    IconButton(onClick = { sortDropdownExpanded.value = true }) {
+                        Icon(
+                            Icons.Default.MoreVert,
+                            contentDescription = "Categories",
+                            modifier = Modifier.size(48.dp)
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = sortDropdownExpanded.value,
+                        onDismissRequest = {
+                            sortDropdownExpanded.value = false
+                        }
+                    ) {
+                        TasksOrderBy.values().forEach { itemValue ->
+                            androidx.compose.material.DropdownMenuItem(
+                                onClick = {
+                                    orderByRule.value = itemValue
+                                    sortDropdownExpanded.value = false
+                                },
+                            ) {
+                                Text(itemValue.name, style = MaterialTheme.typography.headlineSmall)
+                            }
+                        }
                     }
                 },
                 title = {
@@ -114,9 +142,9 @@ fun TodoListScreen(
                 Spacer(modifier = Modifier.height(48.dp))
                 LazyColumn(modifier = Modifier.weight(1f)) {
 
-                    val ordered = tasks
-                        .filter { item -> !item.completed }
-                        .sortedBy { TasksOrderBy.DueDate }
+                    val ordered = orderByRule.value.rule(
+                        tasks.filter { item -> !item.completed }
+                    )
 
                     items(ordered) { task ->
                         TodoTaskItem(
