@@ -46,8 +46,9 @@ enum class TaskPriority(val priority: Int) {
     }
 }
 
-enum class TasksOrderBy(val rule: (TodoTask) -> Unit) {
-    DueDate({ it.dueTo })
+enum class TasksOrderBy(val rule: (List<TodoTask>) -> List<TodoTask> ) {
+    DueDate({ it.sortedBy { task -> task.dueTo } }),
+    Priority({ it.sortedBy { task -> task.priority }})
 }
 
 enum class TaskPriorityColor(val rgb: Color, val priority: TaskPriority) {
@@ -114,7 +115,7 @@ fun TodoTaskItem(
                 if (!task.completed) Text(
                     text = formatDateToText(dueTo) ,
                     style = MaterialTheme.typography.bodyLarge,
-                    color = Color.Gray,
+                    color = if (dueTo.before(Date())) Color.Red else Color.Gray,
                     modifier = Modifier.padding(top = 4.dp)
                 )
             }

@@ -2,11 +2,13 @@ package uni.digi2.dotonotes.ui.screens.tasks
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -82,6 +84,7 @@ fun TaskDialog(
     var taskCategory by remember { mutableStateOf(task?.categoryId) }
     var priorityDropdown by remember { mutableStateOf(false) }
     var categoriesDropdown by remember { mutableStateOf(false) }
+    var taskHasDeadline by remember { mutableStateOf(task?.dueTo?.let { true } ?: false) }
     var taskDeadline by remember { mutableStateOf(createTomorrowDateWithTime()) }
 
     AlertDialog(
@@ -94,12 +97,14 @@ fun TaskDialog(
                     onValueChange = { newValue -> taskTitle = newValue },
                     label = { Text("Task Title") }
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 ExposedDropdownMenuBox(
                     expanded = categoriesDropdown,
                     onExpandedChange = { categoriesDropdown = !categoriesDropdown }) {
                     TextField(
-                        value = taskCategory.let { id -> categories.firstOrNull { it.id == id } }?.name ?: "None",
+                        value = taskCategory.let { id -> categories.firstOrNull { it.id == id } }?.name
+                            ?: "None",
+                        label = { Text("Category") },
                         onValueChange = {},
                         readOnly = true,
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoriesDropdown) },
@@ -121,35 +126,45 @@ fun TaskDialog(
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 TextField(
                     value = taskDescription,
                     onValueChange = { newValue -> taskDescription = newValue },
                     label = { Text("Description") }
                 )
-                Spacer(modifier = Modifier.height(16.dp))
-                WheelDateTimePicker(
-                    startDateTime = LocalDateTime.now(),
-                    minDateTime = taskDeadline,
-                    maxDateTime = LocalDateTime.of(
-                        2025, 10, 20, 5, 30
-                    ),
-                    size = DpSize(300.dp, 100.dp),
-                    rowCount = 5,
-                    textStyle = MaterialTheme.typography.titleSmall,
-                    textColor = Color(0xFF666666),
-                    selectorProperties = WheelPickerDefaults.selectorProperties(
-                        enabled = true,
-                        shape = RoundedCornerShape(0.dp),
-                        color = Color(0xFFf1faee).copy(alpha = 0.2f),
-                        border = BorderStroke(1.dp, Color(0xFFcccccc))
-                    )
-                ) { snappedDateTime -> taskDeadline = snappedDateTime }
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+                Row {
+                    Checkbox(
+                        checked = taskHasDeadline,
+                        onCheckedChange = { taskHasDeadline = it })
+                    Text("Has deadline")
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                if (taskHasDeadline) {
+                    WheelDateTimePicker(
+                        startDateTime = LocalDateTime.now(),
+                        minDateTime = taskDeadline,
+                        maxDateTime = LocalDateTime.of(
+                            2025, 10, 20, 5, 30
+                        ),
+                        size = DpSize(300.dp, 50.dp),
+                        rowCount = 5,
+                        textStyle = MaterialTheme.typography.titleSmall,
+                        textColor = Color(0xFF666666),
+                        selectorProperties = WheelPickerDefaults.selectorProperties(
+                            enabled = true,
+                            shape = RoundedCornerShape(0.dp),
+                            color = Color(0xFFf1faee).copy(alpha = 0.2f),
+                            border = BorderStroke(1.dp, Color(0xFFcccccc))
+                        )
+                    ) { snappedDateTime -> taskDeadline = snappedDateTime }
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
                 ExposedDropdownMenuBox(
                     expanded = priorityDropdown,
                     onExpandedChange = { priorityDropdown = !priorityDropdown }) {
                     TextField(
+                        label = { Text("Priority") },
                         value = TaskPriority.getByValue(taskPriority).name,
                         onValueChange = {},
                         readOnly = true,
@@ -177,23 +192,23 @@ fun TaskDialog(
         confirmButton = {
             Button(
                 onClick = {
+                    val deadline : Date? = when(taskHasDeadline) {
+                        true -> Date.from(taskDeadline.atZone(ZoneId.systemDefault()).toInstant())
+                        false -> null
+                    }
                     if (taskTitle.isNotBlank()) {
                         onSubmit(
                             task?.copy(
                                 title = taskTitle,
                                 description = taskDescription,
                                 priority = taskPriority,
-                                dueTo = Date.from(
-                                    taskDeadline.atZone(ZoneId.systemDefault()).toInstant()
-                                ),
+                                dueTo = deadline,
                                 categoryId = taskCategory
                             ) ?: TodoTask(
                                 title = taskTitle,
                                 description = taskDescription,
                                 priority = taskPriority,
-                                dueTo = Date.from(
-                                    taskDeadline.atZone(ZoneId.systemDefault()).toInstant()
-                                ),
+                                dueTo = deadline,
                                 categoryId = taskCategory
                             )
                         )
