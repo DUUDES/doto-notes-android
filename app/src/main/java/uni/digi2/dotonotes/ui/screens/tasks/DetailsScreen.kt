@@ -36,8 +36,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.runBlocking
-import uni.digi2.dotonotes.data.tasks.TaskRepository
 import uni.digi2.dotonotes.data.tasks.TodoTask
 import uni.digi2.dotonotes.data.tasks.TodoTasksDao
 import uni.digi2.dotonotes.ui.viewModel

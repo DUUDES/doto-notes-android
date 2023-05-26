@@ -34,7 +34,7 @@ import uni.digi2.dotonotes.ui.screens.tasks.UpdateTaskDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CategoriesListScreen(viewModel: TaskCategoriesViewModel = TaskCategoriesViewModel(CategoriesDao())) {
+fun CategoriesListScreen(viewModel: TaskCategoriesViewModel) {
     val categories by viewModel.categories.collectAsState()
 
     val showCreateDialog = remember { mutableStateOf(false) }

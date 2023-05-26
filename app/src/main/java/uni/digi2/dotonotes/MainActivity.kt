@@ -21,12 +21,9 @@ import uni.digi2.dotonotes.ui.BottomNavigationApp
 import uni.digi2.dotonotes.ui.Screen
 import uni.digi2.dotonotes.ui.screens.authorization.FirebaseUIAuthScreen
 import uni.digi2.dotonotes.ui.screens.splash.SplashViewModel
-import uni.digi2.dotonotes.ui.screens.tasks.TodoListScreen
-import uni.digi2.dotonotes.ui.screens.tasks.TodoViewModel
+import uni.digi2.dotonotes.ui.theme.DoToTheme
 
 class MainActivity : ComponentActivity() {
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -41,16 +38,7 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
-
             val navController = rememberNavController()
-
-//            LaunchedEffect(Unit) {
-//                FirebaseAuth.getInstance().addAuthStateListener { firebaseAuth ->
-//                    if (firebaseAuth.currentUser == null) {
-//                        print("signed out")
-//                    }
-//                }
-//            }
 
             if (FirebaseAuth.getInstance().currentUser == null) {
                 FirebaseUIAuthScreen(

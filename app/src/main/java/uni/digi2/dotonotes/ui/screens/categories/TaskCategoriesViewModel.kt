@@ -31,6 +31,8 @@ class TaskCategoriesViewModel(private val categoriesDao: ICategoriesDao) : ViewM
         }
     }
 
+    fun stopObservation() = viewModelScope.launch { categoriesDao.stopObservation() }
+
     fun addCategory(userId: String, category: TaskCategory) {
         viewModelScope.launch {
             categoriesDao.addCategory(userId, category)
