@@ -1,48 +1,33 @@
 package uni.digi2.dotonotes.ui.screens.tasks
 
-import android.telecom.Call.Details
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -52,11 +37,7 @@ import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.runBlocking
 import uni.digi2.dotonotes.R
-import uni.digi2.dotonotes.data.categories.CategoriesDao
-import uni.digi2.dotonotes.data.tasks.TodoTask
-import uni.digi2.dotonotes.data.tasks.TodoTasksDao
 import uni.digi2.dotonotes.ui.Screen
-import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,24 +51,36 @@ fun TodoListScreen(
     val showDeleteDialog = remember { mutableStateOf("") }
     val sortDropdownExpanded = remember { mutableStateOf(false) }
     val orderByRule = remember { mutableStateOf(TasksOrderBy.Priority) }
-
-
     val auth = FirebaseAuth.getInstance()
-
     val fetchedCategories = runBlocking { viewModel.getCategories(auth.currentUser!!.uid) }
+    val editMode = remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 actions = {
                     val context = LocalContext.current
-                    val bitmap = ContextCompat.getDrawable(context, R.drawable.baseline_category_24)
+                    val categoryBitmap = ContextCompat.getDrawable(context, R.drawable.baseline_category_24)
+                        ?.toBitmap()
+                        ?.asImageBitmap()!!
+                    val visibilityBitmap = ContextCompat.getDrawable(context, R.drawable.baseline_visibility_24)
+                        ?.toBitmap()
+                        ?.asImageBitmap()!!
+                    val editNoteBitmap = ContextCompat.getDrawable(context, R.drawable.baseline_edit_note_24)
                         ?.toBitmap()
                         ?.asImageBitmap()!!
 
+                    IconButton(onClick = { editMode.value = !editMode.value }) {
+                        Icon(
+                            if(editMode.value) visibilityBitmap else  editNoteBitmap,
+                            contentDescription = "Edit Mode",
+                            modifier = Modifier.size(48.dp)
+                        )
+                    }
+
                     IconButton(onClick = { navController.navigate(Screen.Categories.route) }) {
                         Icon(
-                            bitmap,
+                            categoryBitmap,
                             contentDescription = "Categories",
                             modifier = Modifier.size(48.dp)
                         )
@@ -140,11 +133,7 @@ fun TodoListScreen(
             Column {
                 Spacer(modifier = Modifier.height(48.dp))
                 LazyColumn(modifier = Modifier.weight(1f)) {
-
-                    val ordered = orderByRule.value.rule(
-                        tasks.filter { item -> !item.completed }
-                    )
-
+                    val ordered = orderByRule.value.rule(tasks.filter { item -> !item.completed })
                     items(ordered) { task ->
                         TodoTaskItem(
                             navController = navController,
@@ -158,24 +147,11 @@ fun TodoListScreen(
                                 }
                             },
                             showEditDialog = { showEditDialog.value = task.id },
-                            showDeleteDialog = { showDeleteDialog.value = task.id }
+                            showDeleteDialog = { showDeleteDialog.value = task.id },
+                            editMode = editMode.value
                         )
                     }
                 }
-//                Button(
-//                    onClick = {
-//                        if (tasks.isNotEmpty()) {
-//                            showDeleteDialog.value = "all"
-//                        }
-//                    },
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(16.dp)
-//                        .height(56.dp),
-//                    enabled = tasks.isNotEmpty()
-//                ) {
-//                    Text("Delete All")
-//                }
             }
         }
     )

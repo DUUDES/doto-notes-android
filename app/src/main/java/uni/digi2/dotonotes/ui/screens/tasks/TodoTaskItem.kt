@@ -2,6 +2,7 @@ package uni.digi2.dotonotes.ui.screens.tasks
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -76,7 +77,8 @@ fun TodoTaskItem(
     task: TodoTask,
     onTaskUpdate: (TodoTask) -> Unit,
     showDeleteDialog: () -> Unit,
-    showEditDialog: () -> Unit
+    showEditDialog: () -> Unit,
+    editMode: Boolean
 ) {
     Row(
         modifier = Modifier
@@ -110,40 +112,40 @@ fun TodoTaskItem(
             Text(
                 text = task.title,
                 style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.clickable {
+                    if (!editMode) {
+                        navController.navigate("task_details/${task.id}")
+                    }
+                }
             )
             task.dueTo?.let { dueTo ->
                 if (!task.completed) Text(
-                    text = formatDateToText(dueTo) ,
+                    text = formatDateToText(dueTo),
                     style = MaterialTheme.typography.bodyLarge,
                     color = if (dueTo.before(Date())) Color.Red else Color.Gray,
                     modifier = Modifier.padding(top = 4.dp)
                 )
             }
         }
-        IconButton(
-            onClick = {
-                navController.navigate("task_details/${task.id}")
+        if (editMode) {
+            IconButton(
+                onClick = showEditDialog
+            ) {
+                Icon(
+                    Icons.Default.Edit,
+                    modifier = Modifier.size(32.dp),
+                    contentDescription = "Edit Task"
+                )
             }
-        ) {
-            Icon(Icons.Default.Info, contentDescription = "Task Details")
-        }
-        IconButton(
-            onClick = showEditDialog
-        ) {
-            Icon(
-                Icons.Default.Edit,
-                modifier = Modifier.size(32.dp),
-                contentDescription = "Edit Task"
-            )
-        }
-        IconButton(
-            onClick = showDeleteDialog
-        ) {
-            Icon(
-                Icons.Default.Delete,
-                modifier = Modifier.size(32.dp),
-                contentDescription = "Delete Task"
-            )
+            IconButton(
+                onClick = showDeleteDialog
+            ) {
+                Icon(
+                    Icons.Default.Delete,
+                    modifier = Modifier.size(32.dp),
+                    contentDescription = "Delete Task"
+                )
+            }
         }
     }
 }
