@@ -3,18 +3,13 @@ package uni.digi2.dotonotes.data.tasks
 import android.content.ContentValues.TAG
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.snapshots
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import uni.digi2.dotonotes.data.categories.TaskCategory
-import java.time.LocalDateTime
 import java.util.Date
 
 
@@ -35,7 +30,7 @@ data class TodoTasksCollection(
     val categories: MutableList<TaskCategory> = mutableListOf()
 )
 
-interface TaskDao {
+interface ITodoTasksDao {
     suspend fun addTask(userId: String, task: TodoTask)
     suspend fun getTasks(userId: String): List<TodoTask>
     suspend fun updateTask(userId: String, task: TodoTask)
@@ -43,10 +38,12 @@ interface TaskDao {
     suspend fun deleteAllTasks(userId: String)
     suspend fun getTaskById(userId: String, taskId: String): TodoTask?
     fun observeTasksRealtime(userId: String): Flow<List<TodoTask>>
+    suspend fun stopObservation()
 }
 
-class TodoTasksDao : TaskDao {
+class TodoTasksDao : ITodoTasksDao {
     private val db = FirebaseFirestore.getInstance()
+    private var listenerRegistration : ListenerRegistration? = null
 
     override suspend fun getTasks(userId: String): List<TodoTask> {
         val documentRef = db.collection("users").document(userId)
@@ -60,7 +57,7 @@ class TodoTasksDao : TaskDao {
     override fun observeTasksRealtime(userId: String): Flow<List<TodoTask>> = callbackFlow  {
         val documentRef = db.collection("users").document(userId)
 
-        val listenerRegistration = documentRef.addSnapshotListener(EventListener { snapshot, error ->
+        listenerRegistration = documentRef.addSnapshotListener(EventListener { snapshot, error ->
             if (error != null) {
                 close(error)
                 return@EventListener
@@ -74,8 +71,9 @@ class TodoTasksDao : TaskDao {
             }
         })
 
-        awaitClose { listenerRegistration.remove() }
+        awaitClose { listenerRegistration?.remove() }
     }
+
 
     override suspend fun addTask(userId: String, task: TodoTask) {
         val documentRef = db.collection("users").document(userId)
@@ -150,6 +148,10 @@ class TodoTasksDao : TaskDao {
         val todos = documentSnapshot.toObject(TodoTasksCollection::class.java)
 
         return todos?.tasks?.find { it.id == taskId }
+    }
+
+    override suspend fun stopObservation() {
+        listenerRegistration?.remove()
     }
 
 

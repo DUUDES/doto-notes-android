@@ -2,8 +2,10 @@ package uni.digi2.dotonotes.data.categories
 
 import android.content.ContentValues
 import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
@@ -28,10 +30,13 @@ interface ICategoriesDao {
     suspend fun updateCategory(userId: String, category: TaskCategory)
     suspend fun deleteCategory(userId: String, categoryId: String)
     fun observeCategoriesRealtime(userId: String): Flow<List<TaskCategory>>
+    suspend fun stopObservation()
 }
 
 class CategoriesDao : ICategoriesDao {
     private val db = FirebaseFirestore.getInstance()
+
+    private var listenerRegistration : ListenerRegistration? = null
 
     override suspend fun addCategory(userId: String, category: TaskCategory) {
         val documentRef = db.collection("users").document(userId)
@@ -105,7 +110,7 @@ class CategoriesDao : ICategoriesDao {
         callbackFlow {
             val documentRef = db.collection("users").document(userId)
 
-            val listenerRegistration =
+            listenerRegistration =
                 documentRef.addSnapshotListener(EventListener { snapshot, error ->
                     if (error != null) {
                         close(error)
@@ -121,6 +126,10 @@ class CategoriesDao : ICategoriesDao {
                     }
                 })
 
-            awaitClose { listenerRegistration.remove() }
+            awaitClose { listenerRegistration?.remove() }
         }
+
+    override suspend fun stopObservation() {
+        listenerRegistration?.remove()
+    }
 }

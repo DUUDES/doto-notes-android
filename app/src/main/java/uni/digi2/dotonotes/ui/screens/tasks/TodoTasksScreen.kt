@@ -53,7 +53,6 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.runBlocking
 import uni.digi2.dotonotes.R
 import uni.digi2.dotonotes.data.categories.CategoriesDao
-import uni.digi2.dotonotes.data.tasks.TaskRepository
 import uni.digi2.dotonotes.data.tasks.TodoTask
 import uni.digi2.dotonotes.data.tasks.TodoTasksDao
 import uni.digi2.dotonotes.ui.Screen
@@ -63,7 +62,7 @@ import java.util.Date
 @Composable
 fun TodoListScreen(
     navController: NavController,
-    viewModel: TodoViewModel = TodoViewModel(TaskRepository(TodoTasksDao()), CategoriesDao())
+    viewModel: TodoViewModel
 ) {
     val tasks by viewModel.tasks.collectAsState()
     val showCreateDialog = remember { mutableStateOf(false) }
