@@ -20,13 +20,15 @@ class TodoViewModel(
     val tasks: StateFlow<List<TodoTask>> = _tasks
 
     init {
-        FirebaseAuth.getInstance().currentUser?.let { user ->
-            getTasks(user.uid)
-            viewModelScope.launch {
-                tasksDao.observeTasksRealtime(user.uid)
-                    .collect {
-                        _tasks.value = it
-                    }
+        FirebaseAuth.getInstance().addAuthStateListener {
+            it.currentUser?.let { user ->
+                getTasks(user.uid)
+                viewModelScope.launch {
+                    tasksDao.observeTasksRealtime(user.uid)
+                        .collect { tasks ->
+                            _tasks.value = tasks
+                        }
+                }
             }
         }
     }

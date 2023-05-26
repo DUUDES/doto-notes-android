@@ -78,7 +78,7 @@ fun AppNavHost(navController: NavController) {
             },
             onDeleteAccount = {
                 FirebaseAuth.getInstance().currentUser?.let { it1 ->
-                    viewModel.deleteAllTasks(it1.uid)
+                    tasksViewModel.deleteAllTasks(it1.uid)
                 }
 
                 tasksViewModel.stopObservation()
@@ -107,7 +107,7 @@ fun AppNavHost(navController: NavController) {
             val taskId = backstack.arguments!!.getString("task_id").toString()
             FirebaseAuth.getInstance().currentUser?.let {
                 tasksViewModel.getTaskById(it.uid, taskId)?.let { task ->
-                    TaskDetailsScreen(task = task)
+                    TaskDetailsScreen(task = task, viewModel = tasksViewModel)
                 }
             }
         }
