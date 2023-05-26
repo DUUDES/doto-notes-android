@@ -36,6 +36,8 @@ import uni.digi2.dotonotes.data.tasks.TaskRepository
 import uni.digi2.dotonotes.data.tasks.TodoTasksDao
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import uni.digi2.dotonotes.R
 import uni.digi2.dotonotes.data.categories.CategoriesDao
 import uni.digi2.dotonotes.ui.screens.authorization.FirebaseUIAuthScreen
@@ -56,12 +58,22 @@ fun AppNavHost(navController: NavController) {
         navController = navController as NavHostController,
         startDestination = Screen.Tasks.route
     ) {
+
         composable(Screen.Home.route) {
             HomeScreen()
         }
         composable(Screen.Profile.route) {
             ProfileScreen(onSignOut = {
-                FirebaseAuth.getInstance().signOut()
+//                Firebase.auth.signOut()
+                navController.navigate(Screen.Auth.route)
+            },
+            onDeleteAccount = {
+                FirebaseAuth.getInstance().currentUser?.let { it1 ->
+                    viewModel.deleteAllTasks(it1.uid)
+                }
+
+                FirebaseAuth.getInstance().currentUser?.delete()
+
                 navController.navigate(Screen.Auth.route)
             })
         }
@@ -104,7 +116,7 @@ fun BottomNavigationApp(navController: NavController) {
         Screen.Home,
         Screen.Tasks,
         Screen.CompletedTasks,
-        Screen.Profile
+        Screen.Profile,
     )
 
     CompositionLocalProvider(LocalNavController provides navController) {
