@@ -25,8 +25,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
+import uni.digi2.dotonotes.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,11 +45,10 @@ fun CategoriesListScreen(viewModel: TaskCategoriesViewModel) {
             TopAppBar(
                 colors = TopAppBarDefaults.smallTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 title = {
-                    Text("Categories List", style = MaterialTheme.typography.headlineLarge)
+                    Text(stringResource(R.string.categories_page), style = MaterialTheme.typography.headlineLarge)
                 },
             )
         },

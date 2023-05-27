@@ -30,6 +30,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.google.firebase.auth.FirebaseAuth
+import uni.digi2.dotonotes.R
 import uni.digi2.dotonotes.data.categories.CategoriesDao
 import uni.digi2.dotonotes.data.tasks.TodoTasksDao
 import uni.digi2.dotonotes.ui.screens.authorization.AuthScreen
@@ -142,13 +143,13 @@ fun DoToApplication(navController: NavController) {
                                   Icon(
                                       screen.icon,
                                       contentDescription = stringResource(id = screen.title),
-                                      tint = if (selected) Color.Gray else Color.White // Задаємо колір іконки
+                                      tint = if (selected) Color.Gray else MaterialTheme.colorScheme.onPrimary
                                   )
                               },
                               label = {
                                   Text(
                                       text = stringResource(id = screen.title),
-                                      color = if (selected) Color.Gray else Color.White // Задаємо колір тексту
+                                      color = if (selected) Color.Gray else MaterialTheme.colorScheme.onPrimary
                                   )
                               },
                               selected = selected,
@@ -172,8 +173,8 @@ fun DoToApplication(navController: NavController) {
 }
 
 sealed class Screen(val route: String, val title: Int, val icon: ImageVector) {
-    object Home : Screen("home", R.string.home_page, Icons.Default.Home)
-    object Tasks : Screen("tasks", R.string.tasks_page, Icons.Filled.List)
+    object Tasks : Screen("tasks", R.string.tasks_page, Icons.Filled.Home)
+    object GroupedTasks : Screen("grouped-tasks", R.string.grouped_tasks_page, Icons.Filled.List)
     object CompletedTasks : Screen("completedTasks", R.string.completed_tasks_page, Icons.Filled.Done)
     object Profile : Screen("profile", R.string.profile_page, Icons.Default.Person)
     object Auth : Screen("auth", R.string.auth_page, Icons.Default.Home)

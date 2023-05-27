@@ -35,4 +35,6 @@
     <string name="profile_page">Профіль</string>
     <string name="auth_page">Вхід</string>
     <string name="completed_tasks_page">Виконані</string>
+    <string name="grouped_tasks_page">Группи</string>
+    <string name="category_none">Без категорії</string>
 </resources>

@@ -33,5 +33,7 @@
     <string name="categories_page">Categories</string>
     <string name="profile_page">Profile</string>
     <string name="auth_page">Auth</string>
-    <string name="completed_tasks_page">Complited</string>
+    <string name="completed_tasks_page">Completed</string>
+    <string name="grouped_tasks_page">Grouped</string>
+    <string name="category_none">None</string>
 </resources>

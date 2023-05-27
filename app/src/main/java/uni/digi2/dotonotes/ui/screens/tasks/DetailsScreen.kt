@@ -12,7 +12,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.runBlocking
 import uni.digi2.dotonotes.R
 import java.util.Date

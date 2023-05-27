@@ -41,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -130,6 +131,8 @@ fun GroupedTasks(
 
     val fetchedCategories = runBlocking { viewModel.getCategories(auth.currentUser!!.uid) }
 
+    val noneCategoryName = stringResource(R.string.category_none)
+
     Scaffold(
         topBar = {
             Surface(
@@ -163,7 +166,7 @@ fun GroupedTasks(
                         }
                     },
                     title = {
-                        Text("Grouped tasks", style = MaterialTheme.typography.headlineLarge)
+                        Text(stringResource(R.string.grouped_tasks_page), style = MaterialTheme.typography.headlineLarge)
                     },
                 )
             }
@@ -187,7 +190,7 @@ fun GroupedTasks(
                     items(
                         fetchedCategories + listOf(
                             Category(
-                                name = "None",
+                                name = noneCategoryName,
                                 id = "null"
                             )
                         )

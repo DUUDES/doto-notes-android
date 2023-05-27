@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,8 +30,6 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.firebase.auth.FirebaseAuth
 import uni.digi2.dotonotes.R
-import com.google.accompanist.coil.rememberCoilPainter
-import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun ProfileScreen(onSignOut: () -> Unit, onDeleteAccount: () -> Unit) {

@@ -87,7 +87,14 @@ fun TaskDialog(
     var priorityDropdown by remember { mutableStateOf(false) }
     var categoriesDropdown by remember { mutableStateOf(false) }
     var taskHasDeadline by remember { mutableStateOf(task?.dueTo?.let { true } ?: false) }
-    var taskDeadline by remember { mutableStateOf(createTomorrowDateWithTime()) }
+    var taskDeadline by remember {
+        mutableStateOf(
+            task?.dueTo?.let {
+                it.toInstant()
+                    .atZone(ZoneId.systemDefault())?.toLocalDateTime()
+            } ?: createTomorrowDateWithTime()
+        )
+    }
 
     AlertDialog(
         modifier = Modifier.fillMaxHeight(0.82f),
@@ -145,19 +152,17 @@ fun TaskDialog(
                 Spacer(modifier = Modifier.height(8.dp))
                 if (taskHasDeadline) {
                     WheelDateTimePicker(
-                        startDateTime = LocalDateTime.now(),
-                        minDateTime = taskDeadline,
-                        maxDateTime = LocalDateTime.of(
-                            2025, 10, 20, 5, 30
-                        ),
+                        startDateTime = taskDeadline,
+                        minDateTime = LocalDateTime.now(),
+                        maxDateTime = LocalDateTime.now().plusYears(15),
                         size = DpSize(300.dp, 100.dp),
                         rowCount = 5,
                         textStyle = MaterialTheme.typography.titleSmall,
-                        textColor = Color(0xFF666666),
+                        textColor = MaterialTheme.colorScheme.onSurface,
                         selectorProperties = WheelPickerDefaults.selectorProperties(
                             enabled = true,
                             shape = RoundedCornerShape(0.dp),
-                            color = Color(0xFFf1faee).copy(alpha = 0.2f),
+                            color = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.2f),
                             border = BorderStroke(1.dp, Color(0xFFcccccc))
                         )
                     ) { snappedDateTime -> taskDeadline = snappedDateTime }
@@ -250,14 +255,14 @@ fun DeleteAllTasksDialog(
                     onDismiss()
                 }
             ) {
-                Text("Yes!")
+                Text(stringResource(id = R.string.yes))
             }
         },
         dismissButton = {
             Button(
                 onClick = { onDismiss() }
             ) {
-                Text("Cancel")
+                Text(stringResource(id = R.string.cancel_action))
             }
         }
     )
@@ -290,7 +295,13 @@ fun DeleteDialog(
         onDismissRequest = onDismiss,
         title = { Text(label) },
         text = {
-            Text(text = stringResource(id = R.string.delete_task_part_1) + "  \"${task?.title ?: stringResource(id = R.string.this_task)}\" " + stringResource(id = R.string.task) + "?" )
+            Text(
+                text = stringResource(id = R.string.delete_task_part_1) + "  \"${
+                    task?.title ?: stringResource(
+                        id = R.string.this_task
+                    )
+                }\" " + stringResource(id = R.string.task) + "?"
+            )
         },
         confirmButton = {
             Button(

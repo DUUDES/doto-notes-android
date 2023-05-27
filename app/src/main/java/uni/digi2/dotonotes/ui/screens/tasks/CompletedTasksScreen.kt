@@ -1,7 +1,5 @@
 package uni.digi2.dotonotes.ui.screens.tasks
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,13 +32,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseAuth
-import uni.digi2.dotonotes.R
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
+import uni.digi2.dotonotes.R
 import uni.digi2.dotonotes.data.tasks.Task
 import java.util.Date
 
@@ -63,21 +58,17 @@ fun CompletedTasksScreen(
                     actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 title = {
-                    Text("Completed tasks", style = MaterialTheme.typography.headlineLarge)
+                    Text(
+                        stringResource(id = R.string.completed_tasks_page),
+                        style = MaterialTheme.typography.headlineLarge
+                    )
                 },
             )
         },
         content = {
-            it.calculateBottomPadding()
+            it.calculateTopPadding()
             Column {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Completed ToDo List", style = MaterialTheme.typography.headlineLarge)
-                }
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(64.dp))
                 LazyColumn {
                     items(tasks.filter { item -> item.completed }) { task ->
                         CompletedTaskItem(
@@ -110,7 +101,10 @@ fun CompletedTasksScreen(
                         .height(50.dp),
                     enabled = tasks.any { item -> item.completed }
                 ) {
-                    Text(stringResource(id = R.string.delete_all), style = MaterialTheme.typography.titleLarge)
+                    Text(
+                        stringResource(id = R.string.delete_all),
+                        style = MaterialTheme.typography.titleLarge
+                    )
                 }
             }
         }
