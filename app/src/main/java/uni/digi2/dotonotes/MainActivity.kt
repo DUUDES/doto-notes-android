@@ -1,11 +1,14 @@
 package uni.digi2.dotonotes
 
+import android.content.res.Resources
+import android.content.res.Resources.Theme
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -38,21 +41,24 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
-            val navController = rememberNavController()
+            DoToTheme {
+                val navController = rememberNavController()
 
-            if (FirebaseAuth.getInstance().currentUser == null) {
-                FirebaseUIAuthScreen(
-                    signInProviders = providers,
-                    onSignInSuccess = {
-                        setContent {
-                            BottomNavigationApp(navController)
-                        }
-                    },
-                    onSignInFailure = { error ->
-                        Log.d("GAUTH ERROR", "error encountered on google auth ${error.message}")
-                    })
-            } else {
-                BottomNavigationApp(navController)
+                if (FirebaseAuth.getInstance().currentUser == null) {
+                    FirebaseUIAuthScreen(
+                        signInProviders = providers,
+                        onSignInSuccess = {
+                            setContent {
+                                BottomNavigationApp(navController)
+                            }
+                        },
+                        onSignInFailure = { error ->
+                            Log.d("GAUTH ERROR", "error encountered on google auth ${error.message}")
+                        })
+                }
+                else {
+                    BottomNavigationApp(navController)
+                }
             }
         }
     }

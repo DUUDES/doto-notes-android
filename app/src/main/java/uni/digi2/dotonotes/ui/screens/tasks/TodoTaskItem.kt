@@ -47,9 +47,9 @@ enum class TaskPriority(val priority: Int) {
     }
 }
 
-enum class TasksOrderBy(val rule: (List<TodoTask>) -> List<TodoTask> ) {
-    DueDate({ it.sortedBy { task -> task.dueTo } }),
-    Priority({ it.sortedBy { task -> task.priority }})
+enum class TasksOrderBy(val rule: (List<TodoTask>) -> List<TodoTask>, val ruleName: String ) {
+    DueDate({ it.sortedBy { task -> task.dueTo } }, "Due date"),
+    Priority({ it.sortedBy { task -> task.priority }}, "Priority")
 }
 
 enum class TaskPriorityColor(val rgb: Color, val priority: TaskPriority) {

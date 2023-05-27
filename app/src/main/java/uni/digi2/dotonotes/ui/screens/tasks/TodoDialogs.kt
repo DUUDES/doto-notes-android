@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
@@ -88,6 +89,7 @@ fun TaskDialog(
     var taskDeadline by remember { mutableStateOf(createTomorrowDateWithTime()) }
 
     AlertDialog(
+        modifier = Modifier.fillMaxHeight(0.82f),
         onDismissRequest = onDismiss,
         title = { Text(label) },
         text = {
@@ -147,7 +149,7 @@ fun TaskDialog(
                         maxDateTime = LocalDateTime.of(
                             2025, 10, 20, 5, 30
                         ),
-                        size = DpSize(300.dp, 50.dp),
+                        size = DpSize(300.dp, 100.dp),
                         rowCount = 5,
                         textStyle = MaterialTheme.typography.titleSmall,
                         textColor = Color(0xFF666666),
