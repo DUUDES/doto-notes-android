@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -143,31 +144,6 @@ fun TaskDialog(
                     label = { Text(stringResource(id = R.string.description)) }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Row {
-                    Checkbox(
-                        checked = taskHasDeadline,
-                        onCheckedChange = { taskHasDeadline = it })
-                    Text(stringResource(id = R.string.has_deadline))
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                if (taskHasDeadline) {
-                    WheelDateTimePicker(
-                        startDateTime = taskDeadline,
-                        minDateTime = LocalDateTime.now(),
-                        maxDateTime = LocalDateTime.now().plusYears(15),
-                        size = DpSize(300.dp, 100.dp),
-                        rowCount = 5,
-                        textStyle = MaterialTheme.typography.titleSmall,
-                        textColor = MaterialTheme.colorScheme.onSurface,
-                        selectorProperties = WheelPickerDefaults.selectorProperties(
-                            enabled = true,
-                            shape = RoundedCornerShape(0.dp),
-                            color = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.2f),
-                            border = BorderStroke(1.dp, Color(0xFFcccccc))
-                        )
-                    ) { snappedDateTime -> taskDeadline = snappedDateTime }
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
                 ExposedDropdownMenuBox(
                     expanded = priorityDropdown,
                     onExpandedChange = { priorityDropdown = !priorityDropdown }) {
@@ -194,6 +170,35 @@ fun TaskDialog(
                             )
                         }
                     }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = taskHasDeadline,
+                        onCheckedChange = { taskHasDeadline = it }
+                    )
+                    Text(stringResource(id = R.string.has_deadline))
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                if (taskHasDeadline) {
+                    WheelDateTimePicker(
+                        startDateTime = taskDeadline,
+                        minDateTime = LocalDateTime.now(),
+                        maxDateTime = LocalDateTime.now().plusYears(15),
+                        size = DpSize(300.dp, 100.dp),
+                        rowCount = 5,
+                        textStyle = MaterialTheme.typography.titleSmall,
+                        textColor = MaterialTheme.colorScheme.onSurface,
+                        selectorProperties = WheelPickerDefaults.selectorProperties(
+                            enabled = true,
+                            shape = RoundedCornerShape(0.dp),
+                            color = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.2f),
+                            border = BorderStroke(1.dp, Color(0xFFcccccc))
+                        )
+                    ) { snappedDateTime -> taskDeadline = snappedDateTime }
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         },

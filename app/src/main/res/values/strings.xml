@@ -36,4 +36,9 @@
     <string name="completed_tasks_page">Completed</string>
     <string name="grouped_tasks_page">Grouped</string>
     <string name="category_none">None</string>
+    <string name="delete_completed_tasks">Delete All Completed Tasks</string>
+    <string name="delete_completed_tasks_assurance">Are you sure you want to delete all completed tasks?</string>
+    <string name="sort_by_due_date">Sort by due date</string>
+    <string name="sort_by_priority">Sort by priority</string>
+    <string name="sort_by_updates">Sort by updates</string>
 </resources>

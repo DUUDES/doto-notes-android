@@ -188,10 +188,10 @@ fun DeleteAllCompletedTasksDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text(text = "Delete All Completed Tasks")
+            Text(text = stringResource(id = R.string.delete_completed_tasks))
         },
         text = {
-            Text(text = "Are you sure you want to delete all completed tasks?")
+            Text(text = stringResource(id = R.string.delete_completed_tasks_assurance))
         },
         confirmButton = {
             Button(
@@ -200,14 +200,14 @@ fun DeleteAllCompletedTasksDialog(
                     onDismiss()
                 }
             ) {
-                Text("Delete All")
+                Text(stringResource(id = R.string.delete_all))
             }
         },
         dismissButton = {
             TextButton(
                 onClick = onDismiss
             ) {
-                Text("Cancel")
+                Text(stringResource(id = R.string.cancel_action))
             }
         }
     )

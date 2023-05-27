@@ -102,7 +102,7 @@ fun TodoListScreen(
                                 },
                             ) {
                                 Text(
-                                    itemValue.ruleName,
+                                    stringResource(id = itemValue.ruleName),
                                     style = MaterialTheme.typography.headlineSmall
                                 )
                             }

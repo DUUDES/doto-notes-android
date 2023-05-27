@@ -37,4 +37,9 @@
     <string name="completed_tasks_page">Виконані</string>
     <string name="grouped_tasks_page">Группи</string>
     <string name="category_none">Без категорії</string>
+    <string name="delete_completed_tasks">Видалити всі завершені завдання</string>
+    <string name="delete_completed_tasks_assurance">"Ви впевнені, що хочете видалити всі завершені завдання? "</string>
+    <string name="sort_by_due_date">Відсортувати по даті виконання</string>
+    <string name="sort_by_priority">Відсортувати по пріорітету</string>
+    <string name="sort_by_updates">Відсортувати по змінам</string>
 </resources>
