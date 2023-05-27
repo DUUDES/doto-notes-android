@@ -98,7 +98,7 @@ fun TaskDialog(
     }
 
     AlertDialog(
-        modifier = Modifier.fillMaxHeight(0.82f),
+        modifier = Modifier.fillMaxHeight(0.9f),
         onDismissRequest = onDismiss,
         title = { Text(label) },
         text = {
