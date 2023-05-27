@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package uni.digi2.dotonotes.ui.screens.tasksWithCategories
+package uni.digi2.dotonotes.ui.screens.groupedTasks
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,9 +20,7 @@ import androidx.compose.material.Badge
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -50,8 +47,8 @@ import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.runBlocking
 import uni.digi2.dotonotes.R
-import uni.digi2.dotonotes.data.categories.TaskCategory
-import uni.digi2.dotonotes.data.tasks.TodoTask
+import uni.digi2.dotonotes.data.categories.Category
+import uni.digi2.dotonotes.data.tasks.Task
 import uni.digi2.dotonotes.ui.Screen
 import uni.digi2.dotonotes.ui.screens.tasks.CreateTaskDialog
 import uni.digi2.dotonotes.ui.screens.tasks.DeleteAllTasksDialog
@@ -62,13 +59,13 @@ import uni.digi2.dotonotes.ui.screens.tasks.TodoViewModel
 import uni.digi2.dotonotes.ui.screens.tasks.UpdateTaskDialog
 
 @Composable
-fun ExpandableCard(
-    navController: NavController,
+fun ExpandableCategoryCard(
     categoryName: String,
-    tasks: List<TodoTask>,
-    onUpdate: (TodoTask) -> Unit,
+    tasks: List<Task>,
+    onUpdate: (Task) -> Unit,
     showEditDialog: MutableState<String>,
     showDeleteDialog: MutableState<String>,
+    showTaskInfo: (Task) -> Unit,
     editMode: Boolean
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -102,12 +99,14 @@ fun ExpandableCard(
                 Column {
                     tasks.forEach { task ->
                         TodoTaskItem(
-                            navController = navController,
                             task = task,
                             onTaskUpdate = onUpdate,
                             showEditDialog = { showEditDialog.value = task.id },
                             showDeleteDialog = { showDeleteDialog.value = task.id },
-                            editMode = editMode
+                            editMode = editMode,
+                            showTaskInfo = {
+                                showTaskInfo(task)
+                            }
                         )
                     }
                 }
@@ -126,11 +125,8 @@ fun GroupedTasks(
     val showCreateDialog = remember { mutableStateOf(false) }
     val showEditDialog = remember { mutableStateOf("") }
     val showDeleteDialog = remember { mutableStateOf("") }
-    val sortDropdownExpanded = remember { mutableStateOf(false) }
-    val orderByRule = remember { mutableStateOf(TasksOrderBy.Priority) }
     val auth = FirebaseAuth.getInstance()
     val editMode = remember { mutableStateOf(false) }
-
 
     val fetchedCategories = runBlocking { viewModel.getCategories(auth.currentUser!!.uid) }
 
@@ -162,41 +158,12 @@ fun GroupedTasks(
                             Icon(
                                 ImageVector.vectorResource(id = R.drawable.baseline_category_24),
                                 contentDescription = "Categories",
-                                modifier = Modifier.size(48.dp)
+                                modifier = Modifier.size(36.dp)
                             )
-                        }
-
-//                        IconButton(onClick = { sortDropdownExpanded.value = true }) {
-//                            Icon(
-//                                Icons.Default.MoreVert,
-//                                contentDescription = "Categories",
-//                                modifier = Modifier.size(48.dp)
-//                            )
-//                        }
-
-                        DropdownMenu(
-                            expanded = sortDropdownExpanded.value,
-                            onDismissRequest = {
-                                sortDropdownExpanded.value = false
-                            }
-                        ) {
-                            TasksOrderBy.values().forEach { itemValue ->
-                                DropdownMenuItem(
-                                    onClick = {
-                                        orderByRule.value = itemValue
-                                        sortDropdownExpanded.value = false
-                                    },
-                                ) {
-                                    Text(
-                                        itemValue.ruleName,
-                                        style = MaterialTheme.typography.headlineSmall
-                                    )
-                                }
-                            }
                         }
                     },
                     title = {
-                        Text("Categories tasks", style = MaterialTheme.typography.headlineLarge)
+                        Text("Grouped tasks", style = MaterialTheme.typography.headlineLarge)
                     },
                 )
             }
@@ -219,7 +186,7 @@ fun GroupedTasks(
                 LazyColumn(modifier = Modifier.weight(1f)) {
                     items(
                         fetchedCategories + listOf(
-                            TaskCategory(
+                            Category(
                                 name = "None",
                                 id = "null"
                             )
@@ -227,12 +194,15 @@ fun GroupedTasks(
                     ) { category ->
                         val groupTasks =
                             tasks.filter { task -> task.categoryId.toString() == category.id }
-                        ExpandableCard(
-                            navController = navController,
+                        ExpandableCategoryCard(
                             categoryName = category.name,
                             tasks = groupTasks,
                             showDeleteDialog = showDeleteDialog,
                             showEditDialog = showEditDialog,
+                            showTaskInfo = { task ->
+                                viewModel.selectedTask.value = task
+                                navController.navigate("task_details")
+                            },
                             onUpdate = { updatedTask ->
                                 auth.currentUser?.let { it1 ->
                                     viewModel.updateTask(

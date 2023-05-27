@@ -1,7 +1,6 @@
 package uni.digi2.dotonotes.ui.screens.profile
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,9 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,17 +24,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.Role.Companion.Image
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat.recreate
-import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.launch
-import uni.digi2.dotonotes.ui.screens.authorization.FirebaseUIAuthScreen
-import uni.digi2.dotonotes.ui.utils.Greeting
 
 
 @Composable
@@ -44,7 +34,6 @@ fun ProfileScreen(onSignOut: () -> Unit, onDeleteAccount: () -> Unit) {
     val firebaseAuth = FirebaseAuth.getInstance()
     val currentUser = firebaseAuth.currentUser
 
-    // Діалогове вікно для підтвердження видалення акаунту
     var showDialog by remember { mutableStateOf(false) }
 
     if (showDialog) {
@@ -93,7 +82,6 @@ fun ProfileScreen(onSignOut: () -> Unit, onDeleteAccount: () -> Unit) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Відображення пошти користувача з більшим розміром тексту
             Text(
                 text = currentUser?.email ?: "",
                 style = MaterialTheme.typography.headlineMedium,
@@ -110,7 +98,11 @@ fun ProfileScreen(onSignOut: () -> Unit, onDeleteAccount: () -> Unit) {
                     backgroundColor = MaterialTheme.colorScheme.secondary
                 )
             ) {
-                Text(text = "Змінити користувача", style = TextStyle(color = Color.White))
+                Text(
+                    text = "Змінити користувача",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSecondary
+                )
             }
 
             Button(
@@ -118,9 +110,15 @@ fun ProfileScreen(onSignOut: () -> Unit, onDeleteAccount: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red) // Зміна фону на червоний
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = MaterialTheme.colorScheme.error
+                )
             ) {
-                Text(text = "Видалити акаунт", style = TextStyle(color = Color.White))
+                Text(
+                    text = "Видалити акаунт",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onError
+                )
             }
         }
     }

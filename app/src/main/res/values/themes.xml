@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.DoToNotes" parent="android:Theme.Material.Light.NoActionBar" >
-    </style>
+    <style name="Theme.DoToNotes" parent="android:Theme.Material.Light.NoActionBar"></style>
 
     <style name="Theme.CustomSplash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">#1779C6</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/im_round_bounded</item>
-        <item name="android:windowSplashScreenBrandingImage" tools:targetApi="s">@drawable/ic_branding</item>
+        <item name="android:windowSplashScreenBrandingImage" tools:targetApi="s">
+            @drawable/ic_branding
+        </item>
         <item name="postSplashScreenTheme">@style/Theme.DoToNotes</item>
     </style>
 </resources>

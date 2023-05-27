@@ -2,9 +2,6 @@ package uni.digi2.dotonotes.ui.screens.authorization
 
 import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -13,12 +10,8 @@ import androidx.navigation.NavController
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.IdpResponse
-import com.google.firebase.auth.FirebaseAuth
 import uni.digi2.dotonotes.R
-import uni.digi2.dotonotes.ui.BottomNavigationApp
 import uni.digi2.dotonotes.ui.Screen
-import uni.digi2.dotonotes.ui.theme.DoToTheme
-import uni.digi2.dotonotes.ui.utils.Greeting
 
 @Composable
 fun AuthScreen(navController: NavController) {

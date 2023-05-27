@@ -2,50 +2,37 @@ package uni.digi2.dotonotes.data.tasks
 
 import android.content.ContentValues.TAG
 import android.util.Log
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.flow.callbackFlow
 import com.google.firebase.firestore.EventListener
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
-import uni.digi2.dotonotes.data.categories.TaskCategory
-import java.util.Date
-
-
-data class TodoTask(
-    var id: String = "",
-    var categoryId: String? = null,
-    val title: String = "",
-    val description: String = "",
-    val priority: Int = 0,
-    val createdOn: Date = Date(),
-    val checkedOn: Date? = null,
-    val dueTo: Date? = null,
-    val completed: Boolean = false
-)
+import uni.digi2.dotonotes.data.categories.Category
 
 data class TodoTasksCollection(
-    val tasks: MutableList<TodoTask> = mutableListOf(),
-    val categories: MutableList<TaskCategory> = mutableListOf()
+    val tasks: MutableList<Task> = mutableListOf(),
+    val categories: MutableList<Category> = mutableListOf()
 )
 
 interface ITodoTasksDao {
-    suspend fun addTask(userId: String, task: TodoTask)
-    suspend fun getTasks(userId: String): List<TodoTask>
-    suspend fun updateTask(userId: String, task: TodoTask)
+    suspend fun addTask(userId: String, task: Task)
+    suspend fun getTasks(userId: String): List<Task>
+    suspend fun updateTask(userId: String, task: Task)
     suspend fun deleteTask(userId: String, taskId: String)
     suspend fun deleteAllTasks(userId: String)
-    suspend fun getTaskById(userId: String, taskId: String): TodoTask?
-    fun observeTasksRealtime(userId: String): Flow<List<TodoTask>>
+    suspend fun deleteAllCompletedTasks(userId: String)
+    suspend fun getTaskById(userId: String, taskId: String): Task?
+    fun observeTasksRealtime(userId: String): Flow<List<Task>>
     suspend fun stopObservation()
 }
 
 class TodoTasksDao : ITodoTasksDao {
     private val db = FirebaseFirestore.getInstance()
-    private var listenerRegistration : ListenerRegistration? = null
+    private var listenerRegistration: ListenerRegistration? = null
 
-    override suspend fun getTasks(userId: String): List<TodoTask> {
+    override suspend fun getTasks(userId: String): List<Task> {
         val documentRef = db.collection("users").document(userId)
 
         val documentSnapshot = documentRef.get().await()
@@ -54,7 +41,7 @@ class TodoTasksDao : ITodoTasksDao {
         return todos?.tasks ?: emptyList()
     }
 
-    override fun observeTasksRealtime(userId: String): Flow<List<TodoTask>> = callbackFlow  {
+    override fun observeTasksRealtime(userId: String): Flow<List<Task>> = callbackFlow {
         val documentRef = db.collection("users").document(userId)
 
         listenerRegistration = documentRef.addSnapshotListener(EventListener { snapshot, error ->
@@ -75,7 +62,7 @@ class TodoTasksDao : ITodoTasksDao {
     }
 
 
-    override suspend fun addTask(userId: String, task: TodoTask) {
+    override suspend fun addTask(userId: String, task: Task) {
         val documentRef = db.collection("users").document(userId)
 
         val taskRef = documentRef.collection("tasks")
@@ -97,7 +84,7 @@ class TodoTasksDao : ITodoTasksDao {
         }
     }
 
-    override suspend fun updateTask(userId: String, task: TodoTask) {
+    override suspend fun updateTask(userId: String, task: Task) {
         val documentRef = db.collection("users").document(userId)
 
         documentRef.get().addOnSuccessListener {
@@ -128,7 +115,6 @@ class TodoTasksDao : ITodoTasksDao {
                 Log.w(TAG, "Error adding document", e)
             }
         }
-
     }
 
     override suspend fun deleteAllTasks(userId: String) {
@@ -141,7 +127,23 @@ class TodoTasksDao : ITodoTasksDao {
         }
     }
 
-    override suspend fun getTaskById(userId: String, taskId: String): TodoTask? {
+    override suspend fun deleteAllCompletedTasks(userId: String) {
+        val documentRef = db.collection("users").document(userId)
+
+        documentRef.get().addOnSuccessListener {
+            val data = it.toObject(TodoTasksCollection::class.java) ?: TodoTasksCollection()
+
+            data.tasks.removeIf { task -> task.completed }
+
+            documentRef.set(data).addOnSuccessListener {
+                Log.d(TAG, "Document added with ID: $userId")
+            }.addOnFailureListener { e ->
+                Log.w(TAG, "Error adding document", e)
+            }
+        }
+    }
+
+    override suspend fun getTaskById(userId: String, taskId: String): Task? {
         val documentRef = db.collection("users").document(userId)
 
         val documentSnapshot = documentRef.get().await()

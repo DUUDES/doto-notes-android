@@ -2,47 +2,42 @@ package uni.digi2.dotonotes.ui.screens.tasks
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
-import uni.digi2.dotonotes.data.tasks.TodoTask
-import uni.digi2.dotonotes.data.tasks.TodoTasksDao
+import uni.digi2.dotonotes.data.tasks.Task
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,10 +53,14 @@ fun CompletedTasksScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                colors = TopAppBarDefaults.smallTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                ),
                 title = {
-                    Text("Page name", style = MaterialTheme.typography.headlineLarge)
+                    Text("Completed tasks", style = MaterialTheme.typography.headlineLarge)
                 },
-                modifier = Modifier.background(color = MaterialTheme.colorScheme.primary)
             )
         },
         content = {
@@ -78,7 +77,6 @@ fun CompletedTasksScreen(
                 LazyColumn {
                     items(tasks.filter { item -> item.completed }) { task ->
                         CompletedTaskItem(
-                            navController = navController,
                             task = task,
                             onTaskUpdate = { updatedTask ->
                                 auth.currentUser?.let { it1 ->
@@ -87,6 +85,10 @@ fun CompletedTasksScreen(
                                         updatedTask
                                     )
                                 }
+                            },
+                            showTaskDetails = {
+                                viewModel.selectedTask.value = task
+                                navController.navigate("task_details")
                             },
                             showDeleteDialog = { showDeleteDialog.value = task.id }
                         )
@@ -101,10 +103,10 @@ fun CompletedTasksScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
-                        .height(56.dp),
+                        .height(50.dp),
                     enabled = tasks.any { item -> item.completed }
                 ) {
-                    Text("Delete All")
+                    Text("Delete All", style = MaterialTheme.typography.titleLarge)
                 }
             }
         }
@@ -115,7 +117,7 @@ fun CompletedTasksScreen(
             DeleteAllCompletedTasksDialog(
                 onTasksDeleted = {
                     auth.currentUser?.let { it1 ->
-                        viewModel.deleteAllTasks(it1.uid)
+                        viewModel.deleteAllCompletedTasks(it1.uid)
                     }
                 },
                 onDismiss = { showDeleteDialog.value = "" }
@@ -139,10 +141,10 @@ fun CompletedTasksScreen(
 
 @Composable
 fun CompletedTaskItem(
-    navController: NavController,
-    task: TodoTask,
-    onTaskUpdate: (TodoTask) -> Unit,
-    showDeleteDialog: () -> Unit
+    task: Task,
+    onTaskUpdate: (Task) -> Unit,
+    showDeleteDialog: () -> Unit,
+    showTaskDetails: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -168,9 +170,7 @@ fun CompletedTaskItem(
             modifier = Modifier.weight(1f)
         )
         IconButton(
-            onClick = {
-                navController.navigate("task_details/${task.id}")
-            }
+            onClick = showTaskDetails
         ) {
             Icon(Icons.Default.Info, contentDescription = "Task Details")
         }

@@ -15,12 +15,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import uni.digi2.dotonotes.data.categories.TaskCategory
+import uni.digi2.dotonotes.data.categories.Category
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateCategoriesDialog(
-    onCategoryCreated: (TaskCategory) -> Unit,
+    onCategoryCreated: (Category) -> Unit,
     onDismiss: () -> Unit
 ) = CategoryDialog(
     category = null,
@@ -32,8 +32,8 @@ fun CreateCategoriesDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdateCategoriesDialog(
-    category: TaskCategory,
-    onTaskUpdated: (TaskCategory) -> Unit,
+    category: Category,
+    onTaskUpdated: (Category) -> Unit,
     onDismiss: () -> Unit
 ) = CategoryDialog(
     category = category,
@@ -43,14 +43,12 @@ fun UpdateCategoriesDialog(
 )
 
 
-
-
 @ExperimentalMaterial3Api
 @Composable
 fun CategoryDialog(
-    category: TaskCategory?,
+    category: Category?,
     label: String,
-    onSubmit: (TaskCategory) -> Unit,
+    onSubmit: (Category) -> Unit,
     onDismiss: () -> Unit
 ) {
     var categoryName by remember { mutableStateOf(category?.name ?: "") }
@@ -63,7 +61,7 @@ fun CategoryDialog(
                 TextField(
                     value = categoryName,
                     onValueChange = { newValue -> categoryName = newValue },
-                    label = { Text("Task Title") }
+                    label = { Text("Category Title") }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -75,7 +73,7 @@ fun CategoryDialog(
                         onSubmit(
                             category?.copy(
                                 name = categoryName
-                            ) ?: TaskCategory(
+                            ) ?: Category(
                                 name = categoryName
                             )
                         )
