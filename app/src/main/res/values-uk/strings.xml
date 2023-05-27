@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DoToNotes</string>
+    <string name="delete_account">Видалити акаунт</string>
+    <string name="home_page">Головна</string>
+    <string name="switch_user">Змінити користувача</string>
+    <string name="delete_action">Видалити</string>
+    <string name="cancel_action">Відмінити</string>
+    <string name="delete_assurance">Ви впевнені, що хочете видалити акаунт? Ця дія є незворотньою.</string>
+    <string name="account_deletion">Видалення акаунту</string>
+    <string name="edit_task">Змінити Завдання</string>
+    <string name="delete_task">Видалити Завдання</string>
+    <string name="edit_todo">Змінити ToDo</string>
+    <string name="create_todo">Створити ToDo</string>
+    <string name="delete_todo">Видалити ToDo</string>
+    <string name="description">Опис</string>
+    <string name="task_title">Назва завдання</string>
+    <string name="category">Категорія</string>
+    <string name="has_deadline">Має дедлайн</string>
+    <string name="priority">Пріорітет</string>
+    <string name="submit_action">Підтвердити</string>
+    <string name="yes">Так</string>
+    <string name="this_task">цей</string>
+    <string name="delete_task_part_1">"Ви впевнені, що хочете видалити "</string>
+    <string name="task">завдання</string>
+    <string name="task_description">Опис завдання</string>
+    <string name="title">Назва</string>
+    <string name="created_on">Створено</string>
+    <string name="checked_on">Перевірено</string>
+    <string name="due_to">Термін</string>
+    <string name="is_completed">Чи виконано</string>
+    <string name="delete_all">Видалити все</string>
+</resources>

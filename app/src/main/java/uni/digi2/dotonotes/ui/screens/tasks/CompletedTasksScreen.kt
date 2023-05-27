@@ -37,8 +37,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
+import uni.digi2.dotonotes.R
 import uni.digi2.dotonotes.data.tasks.TodoTask
 import uni.digi2.dotonotes.data.tasks.TodoTasksDao
 import java.util.Date
@@ -82,20 +84,20 @@ fun CompletedTasksScreen(
                         )
                     }
                 }
-                Button(
-                    onClick = {
-                        if (tasks.any { item -> item.completed }) {
-                            showDeleteDialog.value = "all"
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .height(56.dp),
-                    enabled = tasks.any { item -> item.completed }
-                ) {
-                    Text("Delete All")
-                }
+//                Button(
+//                    onClick = {
+//                        if (tasks.any { item -> item.completed }) {
+//                            showDeleteDialog.value = "all"
+//                        }
+//                    },
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(16.dp)
+//                        .height(56.dp),
+//                    enabled = tasks.any { item -> item.completed }
+//                ) {
+//                    Text(stringResource(id = R.string.delete_all))
+//                }
             }
         }
     )

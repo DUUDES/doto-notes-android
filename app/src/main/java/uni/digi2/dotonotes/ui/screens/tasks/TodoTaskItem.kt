@@ -28,12 +28,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import uni.digi2.dotonotes.data.tasks.TodoTask
 import java.util.Date
 
 import org.ocpsoft.prettytime.PrettyTime
+import uni.digi2.dotonotes.R
 
 enum class TaskPriority(val priority: Int) {
     None(100),
@@ -134,7 +136,7 @@ fun TodoTaskItem(
                 Icon(
                     Icons.Default.Edit,
                     modifier = Modifier.size(32.dp),
-                    contentDescription = "Edit Task"
+                    contentDescription = stringResource(id = R.string.edit_task)
                 )
             }
             IconButton(
@@ -143,7 +145,7 @@ fun TodoTaskItem(
                 Icon(
                     Icons.Default.Delete,
                     modifier = Modifier.size(32.dp),
-                    contentDescription = "Delete Task"
+                    contentDescription = stringResource(id = R.string.delete_task)
                 )
             }
         }

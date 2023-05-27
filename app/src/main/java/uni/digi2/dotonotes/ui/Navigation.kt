@@ -186,8 +186,6 @@ fun BottomNavigationApp(navController: NavController) {
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
     object Home : Screen("home", "Головна", Icons.Default.Home)
     object Tasks : Screen("tasks", "Завдання", Icons.Filled.List)
-
-    //    object TaskDetails : Screen("task_details", "Детальніше", Icons.Filled.Info)
     object CompletedTasks : Screen("completedTasks", "Виконані", Icons.Filled.Done)
     object Profile : Screen("profile", "Профіль", Icons.Default.Person)
     object Auth : Screen("auth", "Авторизація", Icons.Default.Home)

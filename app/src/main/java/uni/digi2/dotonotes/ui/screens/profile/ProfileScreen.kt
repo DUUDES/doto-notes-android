@@ -13,7 +13,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,17 +24,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.Role.Companion.Image
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat.recreate
-import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.launch
-import uni.digi2.dotonotes.ui.screens.authorization.FirebaseUIAuthScreen
-import uni.digi2.dotonotes.ui.utils.Greeting
+import uni.digi2.dotonotes.R
 
 
 @Composable
@@ -49,8 +43,8 @@ fun ProfileScreen(onSignOut: () -> Unit, onDeleteAccount: () -> Unit) {
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = { Text(text = "Видалення акаунту") },
-            text = { Text(text = "Ви впевнені, що хочете видалити акаунт? Ця дія є незворотньою.") },
+            title = { Text(text = stringResource(id = R.string.account_deletion)) },
+            text = { Text(text = stringResource(id = R.string.delete_assurance)) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -58,14 +52,14 @@ fun ProfileScreen(onSignOut: () -> Unit, onDeleteAccount: () -> Unit) {
                         showDialog = false
                     }
                 ) {
-                    Text(text = "Видалити", color = Color.White)
+                    Text(text = stringResource(id = R.string.delete_action), color = Color.White)
                 }
             },
             dismissButton = {
                 Button(
                     onClick = { showDialog = false }
                 ) {
-                    Text(text = "Скасувати" , color = Color.White)
+                    Text(text = stringResource(id = R.string.cancel_action) , color = Color.White)
                 }
             }
         )
@@ -106,7 +100,7 @@ fun ProfileScreen(onSignOut: () -> Unit, onDeleteAccount: () -> Unit) {
                     .padding(bottom = 8.dp),
                 colors = ButtonDefaults.buttonColors(contentColor = Color.White) // Зміна кольору тексту на білий
             ) {
-                Text(text = "Змінити користувача", style = TextStyle(color = Color.White))
+                Text(text = stringResource(id = R.string.switch_user), style = TextStyle(color = Color.White))
             }
 
             Button(
@@ -116,7 +110,7 @@ fun ProfileScreen(onSignOut: () -> Unit, onDeleteAccount: () -> Unit) {
                     .padding(bottom = 8.dp),
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red) // Зміна фону на червоний
             ) {
-                Text(text = "Видалити акаунт",  style = TextStyle(color = Color.White))
+                Text(text = stringResource(id = R.string.delete_account),  style = TextStyle(color = Color.White))
             }
         }
     }

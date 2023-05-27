@@ -23,10 +23,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.commandiron.wheel_picker_compose.WheelDateTimePicker
 import com.commandiron.wheel_picker_compose.core.WheelPickerDefaults
+import uni.digi2.dotonotes.R
 import uni.digi2.dotonotes.data.categories.TaskCategory
 import uni.digi2.dotonotes.data.tasks.TodoTask
 import java.time.LocalDateTime
@@ -47,7 +49,7 @@ fun CreateTaskDialog(
     categories: List<TaskCategory>
 ) = TaskDialog(
     task = null,
-    label = "Create ToDo",
+    label = stringResource(id = R.string.create_todo),
     onSubmit = onTaskCreated,
     onDismiss = onDismiss,
     categories = categories
@@ -62,7 +64,7 @@ fun UpdateTaskDialog(
     categories: List<TaskCategory>
 ) = TaskDialog(
     task = todoTask,
-    label = "Edit ToDo",
+    label = stringResource(id = R.string.edit_todo),
     onSubmit = onTaskUpdated,
     onDismiss = onDismiss,
     categories = categories
@@ -95,7 +97,7 @@ fun TaskDialog(
                 TextField(
                     value = taskTitle,
                     onValueChange = { newValue -> taskTitle = newValue },
-                    label = { Text("Task Title") }
+                    label = { Text(stringResource(id = R.string.task_title)) }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 ExposedDropdownMenuBox(
@@ -104,7 +106,7 @@ fun TaskDialog(
                     TextField(
                         value = taskCategory.let { id -> categories.firstOrNull { it.id == id } }?.name
                             ?: "None",
-                        label = { Text("Category") },
+                        label = { Text(stringResource(id = R.string.category)) },
                         onValueChange = {},
                         readOnly = true,
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoriesDropdown) },
@@ -130,14 +132,14 @@ fun TaskDialog(
                 TextField(
                     value = taskDescription,
                     onValueChange = { newValue -> taskDescription = newValue },
-                    label = { Text("Description") }
+                    label = { Text(stringResource(id = R.string.description)) }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row {
                     Checkbox(
                         checked = taskHasDeadline,
                         onCheckedChange = { taskHasDeadline = it })
-                    Text("Has deadline")
+                    Text(stringResource(id = R.string.has_deadline))
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 if (taskHasDeadline) {
@@ -164,7 +166,7 @@ fun TaskDialog(
                     expanded = priorityDropdown,
                     onExpandedChange = { priorityDropdown = !priorityDropdown }) {
                     TextField(
-                        label = { Text("Priority") },
+                        label = { Text(stringResource(id = R.string.priority)) },
                         value = TaskPriority.getByValue(taskPriority).name,
                         onValueChange = {},
                         readOnly = true,
@@ -216,14 +218,14 @@ fun TaskDialog(
                     }
                 }
             ) {
-                Text("Submit!")
+                Text(stringResource(id = R.string.submit_action))
             }
         },
         dismissButton = {
             Button(
                 onClick = { onDismiss() }
             ) {
-                Text("Cancel")
+                Text(stringResource(id = R.string.cancel_action))
             }
         }
     )
@@ -266,7 +268,7 @@ fun DeleteTaskDialog(
     onDismiss: () -> Unit
 ) = DeleteDialog(
     task = todoTask,
-    label = "Delete ToDo",
+    label = stringResource(id = R.string.delete_todo),
     onSubmit = onTaskDeleted,
     onDismiss = onDismiss
 )
@@ -286,7 +288,7 @@ fun DeleteDialog(
         onDismissRequest = onDismiss,
         title = { Text(label) },
         text = {
-            Text(text = "Are you sure you want to delete  \"${task?.title ?: "this"}\"  task?")
+            Text(text = stringResource(id = R.string.delete_task_part_1) + "  \"${task?.title ?: stringResource(id = R.string.this_task)}\" " + stringResource(id = R.string.task) + "?" )
         },
         confirmButton = {
             Button(
@@ -300,14 +302,14 @@ fun DeleteDialog(
                     }
                 }
             ) {
-                Text("Yes!")
+                Text(stringResource(id = R.string.yes))
             }
         },
         dismissButton = {
             Button(
                 onClick = { onDismiss() }
             ) {
-                Text("Cancel")
+                Text(stringResource(id = R.string.cancel_action))
             }
         }
     )
