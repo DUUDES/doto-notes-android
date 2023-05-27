@@ -29,4 +29,9 @@
     <string name="due_to">Due_to</string>
     <string name="is_completed">Is completed</string>
     <string name="delete_all">Delete all</string>
+    <string name="tasks_page">Tasks</string>
+    <string name="categories_page">Categories</string>
+    <string name="profile_page">Profile</string>
+    <string name="auth_page">Auth</string>
+    <string name="completed_tasks_page">Complited</string>
 </resources>

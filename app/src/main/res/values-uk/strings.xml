@@ -30,4 +30,9 @@
     <string name="due_to">Термін</string>
     <string name="is_completed">Чи виконано</string>
     <string name="delete_all">Видалити все</string>
+    <string name="tasks_page">Завдання</string>
+    <string name="categories_page">Категорії</string>
+    <string name="profile_page">Профіль</string>
+    <string name="auth_page">Вхід</string>
+    <string name="completed_tasks_page">Виконані</string>
 </resources>

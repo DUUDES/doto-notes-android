@@ -27,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -152,13 +153,13 @@ fun BottomNavigationApp(navController: NavController) {
                             icon = {
                                 Icon(
                                     screen.icon,
-                                    contentDescription = screen.title,
+                                    contentDescription = stringResource(id = screen.title),
                                     tint = if (selected) Color.Gray else Color.White // Задаємо колір іконки
                                 )
                             },
                             label = {
                                 Text(
-                                    text = screen.title,
+                                    text = stringResource(id = screen.title),
                                     color = if (selected) Color.Gray else Color.White // Задаємо колір тексту
                                 )
                             },
@@ -183,11 +184,11 @@ fun BottomNavigationApp(navController: NavController) {
     }
 }
 
-sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
-    object Home : Screen("home", "Головна", Icons.Default.Home)
-    object Tasks : Screen("tasks", "Завдання", Icons.Filled.List)
-    object CompletedTasks : Screen("completedTasks", "Виконані", Icons.Filled.Done)
-    object Profile : Screen("profile", "Профіль", Icons.Default.Person)
-    object Auth : Screen("auth", "Авторизація", Icons.Default.Home)
-    object Categories : Screen("categories", "Категорії", Icons.Default.List)
+sealed class Screen(val route: String, val title: Int, val icon: ImageVector) {
+    object Home : Screen("home", R.string.home_page, Icons.Default.Home)
+    object Tasks : Screen("tasks", R.string.tasks_page, Icons.Filled.List)
+    object CompletedTasks : Screen("completedTasks", R.string.completed_tasks_page, Icons.Filled.Done)
+    object Profile : Screen("profile", R.string.profile_page, Icons.Default.Person)
+    object Auth : Screen("auth", R.string.auth_page, Icons.Default.Home)
+    object Categories : Screen("categories", R.string.categories_page, Icons.Default.List)
 }
