@@ -50,14 +50,14 @@ fun ProfileScreen(onSignOut: () -> Unit, onDeleteAccount: () -> Unit) {
                         showDialog = false
                     }
                 ) {
-                    Text(text = stringResource(id = R.string.delete_action), color = Color.White)
+                    Text(text = stringResource(id = R.string.delete_action), color = MaterialTheme.colorScheme.onPrimary)
                 }
             },
             dismissButton = {
                 Button(
                     onClick = { showDialog = false }
                 ) {
-                    Text(text = stringResource(id = R.string.cancel_action) , color = Color.White)
+                    Text(text = stringResource(id = R.string.cancel_action) , color = MaterialTheme.colorScheme.onPrimary)
                 }
             }
         )
@@ -71,7 +71,6 @@ fun ProfileScreen(onSignOut: () -> Unit, onDeleteAccount: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(16.dp)
         ) {
-            // Відображення зображення профілю
             currentUser?.photoUrl?.let { photoUrl ->
                 Image(
                     painter = rememberCoilPainter(request = photoUrl),
@@ -96,8 +95,8 @@ fun ProfileScreen(onSignOut: () -> Unit, onDeleteAccount: () -> Unit) {
                     .fillMaxWidth()
                     .padding(bottom = 8.dp),
                 colors = ButtonDefaults.buttonColors(
-                    contentColor = Color.White,
-                    backgroundColor = MaterialTheme.colorScheme.secondary
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    backgroundColor = MaterialTheme.colorScheme.primary
                 )
             ) {
                 Text(

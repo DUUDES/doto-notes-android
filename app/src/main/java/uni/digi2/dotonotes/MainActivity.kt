@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import uni.digi2.dotonotes.ui.DoToApplication
+import uni.digi2.dotonotes.ui.Screen
 import uni.digi2.dotonotes.ui.screens.authorization.FirebaseUIAuthScreen
 import uni.digi2.dotonotes.ui.screens.splash.SplashViewModel
 import uni.digi2.dotonotes.ui.theme.DoToTheme

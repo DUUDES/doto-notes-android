@@ -14,3 +14,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+private_key.pepk
+app/release

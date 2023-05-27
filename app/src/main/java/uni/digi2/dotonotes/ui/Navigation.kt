@@ -1,8 +1,14 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package uni.digi2.dotonotes.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
@@ -17,18 +23,23 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.firebase.auth.FirebaseAuth
 import uni.digi2.dotonotes.R
 import uni.digi2.dotonotes.data.categories.CategoriesDao
@@ -59,7 +70,6 @@ fun AppNavHost(
         navController = navController as NavHostController,
         startDestination = Screen.Auth.route
     ) {
-
         composable(Screen.Profile.route) {
             ProfileScreen(
                 onSignOut = {
@@ -103,32 +113,31 @@ fun AppNavHost(
         composable(route = "task_details") {
             TaskDetailsScreen(viewModel = tasksViewModel)
         }
-
-
     }
 }
 
 val LocalNavController = compositionLocalOf<NavController> { error("No NavController found") }
 
+val items = listOf(
+    Screen.Tasks,
+    Screen.GroupedTasks,
+    Screen.CompletedTasks,
+    Screen.Profile,
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DoToApplication(navController: NavController) {
-    val items = listOf(
-        Screen.Tasks,
-        Screen.GroupedTasks,
-        Screen.CompletedTasks,
-        Screen.Profile,
-    )
-
     CompositionLocalProvider(LocalNavController provides navController) {
         Scaffold(
             bottomBar = {
                 DoToTheme {
                     BottomNavigation {
-                        val currentRoute = LocalNavController.current.currentDestination?.route
+                        val navBackStackEntry by LocalNavController.current.currentBackStackEntryAsState()
+                        val currentDestination = navBackStackEntry?.destination
 
                         items.forEach { screen ->
-                            val selected = currentRoute == screen.route
+                            val selected = currentDestination?.hierarchy?.any { it.route == screen.route } ?: false
                             val onClick = {
                                 navController.navigate(screen.route) {
                                     popUpTo(navController.graph.startDestinationId) {
@@ -138,29 +147,33 @@ fun DoToApplication(navController: NavController) {
                                 }
                             }
 
-                          BottomNavigationItem(
-                              icon = {
-                                  Icon(
-                                      screen.icon,
-                                      contentDescription = stringResource(id = screen.title),
-                                      tint = if (selected) Color.Gray else MaterialTheme.colorScheme.onPrimary
-                                  )
-                              },
-                              label = {
-                                  Text(
-                                      text = stringResource(id = screen.title),
-                                      color = if (selected) Color.Gray else MaterialTheme.colorScheme.onPrimary
-                                  )
-                              },
-                              selected = selected,
-                              onClick = onClick,
-                              modifier = Modifier.background(MaterialTheme.colorScheme.primary)
-                          )
+                            BottomNavigationItem(
+                                icon = {
+                                    Icon(
+                                        screen.icon,
+                                        contentDescription = stringResource(id = screen.title) ,
+                                        tint = if (selected) MaterialTheme.colorScheme.onPrimary
+                                            else MaterialTheme.colorScheme.secondary
+                                    )
+                                },
+                                label = {
+                                    AnimatedVisibility(visible = selected) {
+                                        Text(
+                                            text = stringResource(id = screen.title),
+                                            color = MaterialTheme.colorScheme.onPrimary
+                                        )
+                                    }
+                                },
+                                selected = selected,
+                                onClick = onClick,
+                                modifier = Modifier.background(MaterialTheme.colorScheme.primary)
+                            )
                        }
                     }
                 }
             }
         ) { innerPadding ->
+            innerPadding.calculateTopPadding()
             Box(
                 modifier = Modifier
                     .padding(innerPadding)
