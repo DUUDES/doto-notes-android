@@ -55,7 +55,7 @@ fun AppNavHost(
 
     NavHost(
         navController = navController as NavHostController,
-        startDestination = Screen.Tasks.route
+        startDestination = Screen.Auth.route
     ) {
 
         composable(Screen.Profile.route) {
@@ -92,7 +92,11 @@ fun AppNavHost(
             CompletedTasksScreen(navController, tasksViewModel)
         }
         composable(Screen.Auth.route) {
-            AuthScreen(navController)
+            if (FirebaseAuth.getInstance().currentUser == null){
+                AuthScreen(navController)
+            } else {
+                TodoListScreen(navController, tasksViewModel)
+            }
         }
         composable(route = "task_details") {
             TaskDetailsScreen(viewModel = tasksViewModel)

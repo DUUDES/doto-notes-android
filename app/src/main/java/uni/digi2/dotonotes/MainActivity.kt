@@ -23,31 +23,10 @@ class MainActivity : ComponentActivity() {
 
         installSplashScreen().setKeepOnScreenCondition { viewModel.isLoading.value }
 
-        val providers = listOf(
-            AuthUI.IdpConfig.EmailBuilder().build(), AuthUI.IdpConfig.GoogleBuilder().build()
-        )
-
         setContent {
             DoToTheme {
                 val navController = rememberNavController()
-
-                if (FirebaseAuth.getInstance().currentUser == null) {
-                    FirebaseUIAuthScreen(
-                        signInProviders = providers,
-                        onSignInSuccess = {
-                            setContent {
-                                DoToApplication(navController)
-                            }
-                        },
-                        onSignInFailure = { error ->
-                            Log.d(
-                                "GAUTH ERROR",
-                                "error encountered on google auth ${error.message}"
-                            )
-                        })
-                } else {
-                    DoToApplication(navController)
-                }
+                DoToApplication(navController)
             }
         }
     }
