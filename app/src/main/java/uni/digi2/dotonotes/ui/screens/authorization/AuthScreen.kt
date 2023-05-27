@@ -2,8 +2,6 @@ package uni.digi2.dotonotes.ui.screens.authorization
 
 import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -12,11 +10,8 @@ import androidx.navigation.NavController
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.IdpResponse
-import com.google.firebase.auth.FirebaseAuth
 import uni.digi2.dotonotes.R
-import uni.digi2.dotonotes.ui.BottomNavigationApp
 import uni.digi2.dotonotes.ui.Screen
-import uni.digi2.dotonotes.ui.utils.Greeting
 
 @Composable
 fun AuthScreen(navController: NavController) {
@@ -88,7 +83,7 @@ fun FirebaseUIAuthScreen(
 
     val signInIntent = remember {
         AuthUI.getInstance().createSignInIntentBuilder().setIsSmartLockEnabled(false)
-            .setLogo(R.drawable.ic_todo_list).setAvailableProviders(signInProviders).build()
+            .setLogo(R.drawable.im_round_bounded).setAvailableProviders(signInProviders).build()
     }
 
     LaunchedEffect(Unit) {

@@ -14,6 +14,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,14 +31,14 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.firebase.auth.FirebaseAuth
 import uni.digi2.dotonotes.R
-
+import com.google.accompanist.coil.rememberCoilPainter
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun ProfileScreen(onSignOut: () -> Unit, onDeleteAccount: () -> Unit) {
     val firebaseAuth = FirebaseAuth.getInstance()
     val currentUser = firebaseAuth.currentUser
 
-    // Діалогове вікно для підтвердження видалення акаунту
     var showDialog by remember { mutableStateOf(false) }
 
     if (showDialog) {
@@ -86,10 +87,9 @@ fun ProfileScreen(onSignOut: () -> Unit, onDeleteAccount: () -> Unit) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Відображення пошти користувача з більшим розміром тексту
             Text(
                 text = currentUser?.email ?: "",
-                style = MaterialTheme.typography.h5,
+                style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
@@ -98,9 +98,16 @@ fun ProfileScreen(onSignOut: () -> Unit, onDeleteAccount: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp),
-                colors = ButtonDefaults.buttonColors(contentColor = Color.White) // Зміна кольору тексту на білий
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = Color.White,
+                    backgroundColor = MaterialTheme.colorScheme.secondary
+                )
             ) {
-                Text(text = stringResource(id = R.string.switch_user), style = TextStyle(color = Color.White))
+                Text(
+                    text = stringResource(id = R.string.switch_user),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSecondary
+                )
             }
 
             Button(
@@ -108,9 +115,15 @@ fun ProfileScreen(onSignOut: () -> Unit, onDeleteAccount: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red) // Зміна фону на червоний
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = MaterialTheme.colorScheme.error
+                )
             ) {
-                Text(text = stringResource(id = R.string.delete_account),  style = TextStyle(color = Color.White))
+                Text(
+                    text = stringResource(id = R.string.delete_account),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onError
+                )
             }
         }
     }

@@ -6,12 +6,12 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import uni.digi2.dotonotes.data.categories.Category
 import uni.digi2.dotonotes.data.categories.ICategoriesDao
-import uni.digi2.dotonotes.data.categories.TaskCategory
 
 class TaskCategoriesViewModel(private val categoriesDao: ICategoriesDao) : ViewModel() {
-    private val _categories = MutableStateFlow<List<TaskCategory>>(emptyList())
-    val categories: StateFlow<List<TaskCategory>> = _categories
+    private val _categories = MutableStateFlow<List<Category>>(emptyList())
+    val categories: StateFlow<List<Category>> = _categories
 
     init {
         FirebaseAuth.getInstance().currentUser?.let { user ->
@@ -33,14 +33,14 @@ class TaskCategoriesViewModel(private val categoriesDao: ICategoriesDao) : ViewM
 
     fun stopObservation() = viewModelScope.launch { categoriesDao.stopObservation() }
 
-    fun addCategory(userId: String, category: TaskCategory) {
+    fun addCategory(userId: String, category: Category) {
         viewModelScope.launch {
             categoriesDao.addCategory(userId, category)
             getCategories(userId)
         }
     }
 
-    fun updateCategory(userId: String, category: TaskCategory) {
+    fun updateCategory(userId: String, category: Category) {
         viewModelScope.launch {
             categoriesDao.updateCategory(userId, category)
             getCategories(userId)

@@ -2,43 +2,31 @@ package uni.digi2.dotonotes.data.categories
 
 import android.content.ContentValues
 import android.util.Log
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.tasks.await
-import uni.digi2.dotonotes.data.tasks.TodoTask
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import uni.digi2.dotonotes.data.tasks.TodoTasksCollection
-import java.util.Date
 
-data class TaskCategory(
-    var id: String = "",
-    val name: String = "",
-    val createdOn: Date = Date(),
-)
 
 interface ICategoriesDao {
-    suspend fun addCategory(userId: String, category: TaskCategory)
-    suspend fun getCategories(userId: String): List<TaskCategory>
-    suspend fun updateCategory(userId: String, category: TaskCategory)
+    suspend fun addCategory(userId: String, category: Category)
+    suspend fun getCategories(userId: String): List<Category>
+    suspend fun updateCategory(userId: String, category: Category)
     suspend fun deleteCategory(userId: String, categoryId: String)
-    fun observeCategoriesRealtime(userId: String): Flow<List<TaskCategory>>
+    fun observeCategoriesRealtime(userId: String): Flow<List<Category>>
     suspend fun stopObservation()
 }
 
 class CategoriesDao : ICategoriesDao {
     private val db = FirebaseFirestore.getInstance()
 
-    private var listenerRegistration : ListenerRegistration? = null
+    private var listenerRegistration: ListenerRegistration? = null
 
-    override suspend fun addCategory(userId: String, category: TaskCategory) {
+    override suspend fun addCategory(userId: String, category: Category) {
         val documentRef = db.collection("users").document(userId)
 
         val taskRef = documentRef.collection("categories")
@@ -60,7 +48,7 @@ class CategoriesDao : ICategoriesDao {
         }
     }
 
-    override suspend fun getCategories(userId: String): List<TaskCategory> {
+    override suspend fun getCategories(userId: String): List<Category> {
         val documentRef = db.collection("users").document(userId)
 
         val documentSnapshot = documentRef.get().await()
@@ -69,7 +57,7 @@ class CategoriesDao : ICategoriesDao {
         return todos?.categories ?: emptyList()
     }
 
-    override suspend fun updateCategory(userId: String, category: TaskCategory) {
+    override suspend fun updateCategory(userId: String, category: Category) {
         val documentRef = db.collection("users").document(userId)
 
         documentRef.get().addOnSuccessListener {
@@ -106,7 +94,7 @@ class CategoriesDao : ICategoriesDao {
         }
     }
 
-    override fun observeCategoriesRealtime(userId: String): Flow<List<TaskCategory>> =
+    override fun observeCategoriesRealtime(userId: String): Flow<List<Category>> =
         callbackFlow {
             val documentRef = db.collection("users").document(userId)
 

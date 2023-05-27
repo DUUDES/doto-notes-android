@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
@@ -29,8 +30,8 @@ import androidx.compose.ui.unit.dp
 import com.commandiron.wheel_picker_compose.WheelDateTimePicker
 import com.commandiron.wheel_picker_compose.core.WheelPickerDefaults
 import uni.digi2.dotonotes.R
-import uni.digi2.dotonotes.data.categories.TaskCategory
-import uni.digi2.dotonotes.data.tasks.TodoTask
+import uni.digi2.dotonotes.data.categories.Category
+import uni.digi2.dotonotes.data.tasks.Task
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
@@ -44,9 +45,9 @@ fun createTomorrowDateWithTime(): LocalDateTime {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateTaskDialog(
-    onTaskCreated: (TodoTask) -> Unit,
+    onTaskCreated: (Task) -> Unit,
     onDismiss: () -> Unit,
-    categories: List<TaskCategory>
+    categories: List<Category>
 ) = TaskDialog(
     task = null,
     label = stringResource(id = R.string.create_todo),
@@ -58,10 +59,10 @@ fun CreateTaskDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdateTaskDialog(
-    todoTask: TodoTask,
-    onTaskUpdated: (TodoTask) -> Unit,
+    todoTask: Task,
+    onTaskUpdated: (Task) -> Unit,
     onDismiss: () -> Unit,
-    categories: List<TaskCategory>
+    categories: List<Category>
 ) = TaskDialog(
     task = todoTask,
     label = stringResource(id = R.string.edit_todo),
@@ -70,15 +71,14 @@ fun UpdateTaskDialog(
     categories = categories
 )
 
-
 @ExperimentalMaterial3Api
 @Composable
 fun TaskDialog(
-    task: TodoTask?,
+    task: Task?,
     label: String,
-    onSubmit: (TodoTask) -> Unit,
+    onSubmit: (Task) -> Unit,
     onDismiss: () -> Unit,
-    categories: List<TaskCategory>
+    categories: List<Category>
 ) {
     var taskTitle by remember { mutableStateOf(task?.title ?: "") }
     var taskDescription by remember { mutableStateOf(task?.description ?: "") }
@@ -90,6 +90,7 @@ fun TaskDialog(
     var taskDeadline by remember { mutableStateOf(createTomorrowDateWithTime()) }
 
     AlertDialog(
+        modifier = Modifier.fillMaxHeight(0.82f),
         onDismissRequest = onDismiss,
         title = { Text(label) },
         text = {
@@ -149,7 +150,7 @@ fun TaskDialog(
                         maxDateTime = LocalDateTime.of(
                             2025, 10, 20, 5, 30
                         ),
-                        size = DpSize(300.dp, 50.dp),
+                        size = DpSize(300.dp, 100.dp),
                         rowCount = 5,
                         textStyle = MaterialTheme.typography.titleSmall,
                         textColor = Color(0xFF666666),
@@ -194,7 +195,7 @@ fun TaskDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    val deadline : Date? = when(taskHasDeadline) {
+                    val deadline: Date? = when (taskHasDeadline) {
                         true -> Date.from(taskDeadline.atZone(ZoneId.systemDefault()).toInstant())
                         false -> null
                     }
@@ -205,8 +206,9 @@ fun TaskDialog(
                                 description = taskDescription,
                                 priority = taskPriority,
                                 dueTo = deadline,
-                                categoryId = taskCategory
-                            ) ?: TodoTask(
+                                categoryId = taskCategory,
+                                updatedOn = Date()
+                            ) ?: Task(
                                 title = taskTitle,
                                 description = taskDescription,
                                 priority = taskPriority,
@@ -263,8 +265,8 @@ fun DeleteAllTasksDialog(
 
 @Composable
 fun DeleteTaskDialog(
-    todoTask: TodoTask,
-    onTaskDeleted: (TodoTask) -> Unit,
+    todoTask: Task,
+    onTaskDeleted: (Task) -> Unit,
     onDismiss: () -> Unit
 ) = DeleteDialog(
     task = todoTask,
@@ -276,9 +278,9 @@ fun DeleteTaskDialog(
 
 @Composable
 fun DeleteDialog(
-    task: TodoTask?,
+    task: Task?,
     label: String,
-    onSubmit: (TodoTask) -> Unit,
+    onSubmit: (Task) -> Unit,
     onDismiss: () -> Unit
 ) {
     var taskTitle by remember { mutableStateOf(task?.title ?: "") }
@@ -296,7 +298,7 @@ fun DeleteDialog(
                     if (taskTitle.isNotBlank()) {
                         onSubmit(
                             task?.copy(title = taskTitle, description = taskDescription)
-                                ?: TodoTask(title = taskTitle, description = taskDescription)
+                                ?: Task(title = taskTitle, description = taskDescription)
                         )
                         onDismiss()
                     }

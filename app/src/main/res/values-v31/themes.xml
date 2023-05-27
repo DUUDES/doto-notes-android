@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="Theme.CustomSplash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">#1779C6</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/im_round_bounded</item>
