@@ -1,3 +1,37 @@
 <resources>
     <string name="app_name">DoToNotes</string>
+    <string name="delete_account">Delete account</string>
+    <string name="home_page">Home</string>
+    <string name="switch_user">Switch User</string>
+    <string name="delete_action">Delete</string>
+    <string name="cancel_action">Cancel</string>
+    <string name="delete_assurance">Are you sure you want to delete your account? This action is irreversible.</string>
+    <string name="account_deletion">Account deletion</string>
+    <string name="edit_task">Edit Task</string>
+    <string name="delete_task">Delete Task</string>
+    <string name="edit_todo">Edit ToDo</string>
+    <string name="create_todo">Create ToDo</string>
+    <string name="delete_todo">Delete ToDo</string>
+    <string name="description">Description</string>
+    <string name="task_title">Task Title</string>
+    <string name="category">Category</string>
+    <string name="has_deadline">Has deadline</string>
+    <string name="priority">Priority</string>
+    <string name="submit_action">Submit!</string>
+    <string name="yes">Yes!</string>
+    <string name="this_task">this</string>
+    <string name="delete_task_part_1">Are you sure you want to delete</string>
+    <string name="task">task</string>
+    <string name="task_description">Task Description</string>
+    <string name="title">Title</string>
+    <string name="created_on">Created on</string>
+    <string name="checked_on">Checked on</string>
+    <string name="due_to">Due_to</string>
+    <string name="is_completed">Is completed</string>
+    <string name="delete_all">Delete all</string>
+    <string name="tasks_page">Tasks</string>
+    <string name="categories_page">Categories</string>
+    <string name="profile_page">Profile</string>
+    <string name="auth_page">Auth</string>
+    <string name="completed_tasks_page">Complited</string>
 </resources>

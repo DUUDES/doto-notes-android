@@ -33,6 +33,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
+import uni.digi2.dotonotes.R
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -106,7 +110,7 @@ fun CompletedTasksScreen(
                         .height(50.dp),
                     enabled = tasks.any { item -> item.completed }
                 ) {
-                    Text("Delete All", style = MaterialTheme.typography.titleLarge)
+                    Text(stringResource(id = R.string.delete_all), style = MaterialTheme.typography.titleLarge)
                 }
             }
         }
