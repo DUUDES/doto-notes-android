@@ -1,5 +1,6 @@
 package uni.digi2.dotonotes.ui.screens.tasks
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
@@ -39,7 +41,7 @@ import uni.digi2.dotonotes.R
 import uni.digi2.dotonotes.data.tasks.Task
 import java.util.Date
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun CompletedTasksScreen(
     navController: NavController,
@@ -67,6 +69,7 @@ fun CompletedTasksScreen(
         },
         content = {
             it.calculateTopPadding()
+
             Column {
                 Spacer(modifier = Modifier.height(64.dp))
                 LazyColumn {

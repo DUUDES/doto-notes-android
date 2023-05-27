@@ -7,6 +7,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.BottomNavigation
@@ -34,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -55,6 +57,7 @@ import uni.digi2.dotonotes.ui.screens.tasks.TodoListScreen
 import uni.digi2.dotonotes.ui.screens.tasks.TodoViewModel
 import uni.digi2.dotonotes.ui.theme.DoToTheme
 
+
 @Composable
 fun AppNavHost(
     navController: NavController
@@ -65,6 +68,7 @@ fun AppNavHost(
 
     val tasksViewModel = TodoViewModel(tasksDao, categoriesDao)
     val categoriesViewModel = TaskCategoriesViewModel(categoriesDao)
+
 
     NavHost(
         navController = navController as NavHostController,
@@ -128,6 +132,7 @@ val items = listOf(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DoToApplication(navController: NavController) {
+
     CompositionLocalProvider(LocalNavController provides navController) {
         Scaffold(
             bottomBar = {
@@ -153,9 +158,11 @@ fun DoToApplication(navController: NavController) {
                                         screen.icon,
                                         contentDescription = stringResource(id = screen.title) ,
                                         tint = if (selected) MaterialTheme.colorScheme.onPrimary
-                                            else MaterialTheme.colorScheme.secondary
+                                        else MaterialTheme.colorScheme.secondary,
+                                        modifier = Modifier.size(if (selected) 28.dp else 36.dp)
                                     )
                                 },
+                                alwaysShowLabel = false,
                                 label = {
                                     AnimatedVisibility(visible = selected) {
                                         Text(
