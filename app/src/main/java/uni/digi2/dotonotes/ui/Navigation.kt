@@ -5,20 +5,33 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Colors
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.contentColorFor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
@@ -26,13 +39,26 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import coil.Coil
+import coil.util.CoilUtils
 import uni.digi2.dotonotes.data.tasks.TodoTasksDao
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
@@ -48,8 +74,11 @@ import uni.digi2.dotonotes.ui.screens.home.HomeScreen
 import uni.digi2.dotonotes.ui.screens.profile.ProfileScreen
 import uni.digi2.dotonotes.ui.screens.tasks.CompletedTasksScreen
 import uni.digi2.dotonotes.ui.screens.tasks.TaskDetailsScreen
+import uni.digi2.dotonotes.ui.screens.tasks.TasksOrderBy
 import uni.digi2.dotonotes.ui.screens.tasks.TodoListScreen
 import uni.digi2.dotonotes.ui.screens.tasks.TodoViewModel
+import uni.digi2.dotonotes.ui.screens.tasksWithCategories.GroupedTasks
+import uni.digi2.dotonotes.ui.theme.DoToTheme
 
 @Composable
 fun AppNavHost(navController: NavController) {
@@ -88,6 +117,9 @@ fun AppNavHost(navController: NavController) {
                 navController.navigate(Screen.Auth.route)
             })
         }
+        composable(Screen.GroupedTasks.route) {
+            GroupedTasks(navController, tasksViewModel)
+        }
         composable(Screen.Tasks.route) {
             TodoListScreen(navController, tasksViewModel)
         }
@@ -122,52 +154,52 @@ val LocalNavController = compositionLocalOf<NavController> { error("No NavContro
 @Composable
 fun BottomNavigationApp(navController: NavController) {
     val items = listOf(
-        Screen.Home,
+//        Screen.Home,
         Screen.Tasks,
+        Screen.GroupedTasks,
         Screen.CompletedTasks,
         Screen.Profile,
     )
 
     CompositionLocalProvider(LocalNavController provides navController) {
         Scaffold(
-
+            topBar = {
+            },
             bottomBar = {
-                BottomNavigation(
-                    contentColor = Color.White // Задаємо білий колір контенту (тексту та іконок)
-                ) {
-                    val currentRoute = LocalNavController.current.currentDestination?.route
+                DoToTheme {
+                    BottomNavigation {
+                        val currentRoute = LocalNavController.current.currentDestination?.route
 
-                    items.forEach { screen ->
-                        val selected = currentRoute == screen.route
-                        val onClick = {
-                            navController.navigate(screen.route) {
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
+                        items.forEach { screen ->
+                            val selected = currentRoute == screen.route
+                            val onClick = {
+                                navController.navigate(screen.route) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
                                 }
-                                launchSingleTop = true
                             }
-                        }
 
-                        BottomNavigationItem(
-                            icon = {
-                                Icon(
-                                    screen.icon,
-                                    contentDescription = screen.title,
-                                    tint = if (selected) Color.Gray else Color.White // Задаємо колір іконки
-                                )
-                            },
-                            label = {
-                                Text(
-                                    text = screen.title,
-                                    color = if (selected) Color.Gray else Color.White // Задаємо колір тексту
-                                )
-                            },
-                            selected = selected,
-                            onClick = onClick,
-                            selectedContentColor = Color.White// Задаємо колір вибраного контенту
-//                            unselectedContentColor = Color.Gray, // Задаємо колір невибраного контенту
-//                            modifier = Modifier.background(Color.Black) // Задаємо чорний фон для кожного пункту
-                        )
+                            BottomNavigationItem(
+                                icon = {
+                                    Icon(
+                                        screen.icon,
+                                        contentDescription = screen.title,
+                                        tint = if (selected) Color.Gray else Color.White // Задаємо колір іконки
+                                    )
+                                },
+                                label = {
+                                    Text(
+                                        text = screen.title,
+                                        color = if (selected) Color.Gray else Color.White // Задаємо колір тексту
+                                    )
+                                },
+                                selected = selected,
+                                onClick = onClick,
+                                modifier = Modifier.background(MaterialTheme.colorScheme.primary)
+                            )
+                        }
                     }
                 }
             }
@@ -175,7 +207,8 @@ fun BottomNavigationApp(navController: NavController) {
             Box(
                 modifier = Modifier
                     .padding(innerPadding)
-                    .background(Color.White) // Задаємо білий фон для контенту
+                    .background(MaterialTheme.colorScheme.surface)
+
             ) {
                 AppNavHost(navController = navController)
             }
@@ -185,9 +218,8 @@ fun BottomNavigationApp(navController: NavController) {
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
     object Home : Screen("home", "Головна", Icons.Default.Home)
-    object Tasks : Screen("tasks", "Завдання", Icons.Filled.List)
-
-    //    object TaskDetails : Screen("task_details", "Детальніше", Icons.Filled.Info)
+    object Tasks : Screen("tasks", "Завдання", Icons.Default.Home)
+    object GroupedTasks : Screen("grouped-tasks", "Групи", Icons.Filled.List)
     object CompletedTasks : Screen("completedTasks", "Виконані", Icons.Filled.Done)
     object Profile : Screen("profile", "Профіль", Icons.Default.Person)
     object Auth : Screen("auth", "Авторизація", Icons.Default.Home)

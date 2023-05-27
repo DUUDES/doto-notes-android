@@ -11,6 +11,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
@@ -23,14 +25,20 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.vectorResource
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.navigation.NavController
@@ -58,21 +66,18 @@ fun TodoListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                colors = TopAppBarDefaults.smallTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                ),
                 actions = {
-                    val context = LocalContext.current
-                    val categoryBitmap = ContextCompat.getDrawable(context, R.drawable.baseline_category_24)
-                        ?.toBitmap()
-                        ?.asImageBitmap()!!
-                    val visibilityBitmap = ContextCompat.getDrawable(context, R.drawable.baseline_visibility_24)
-                        ?.toBitmap()
-                        ?.asImageBitmap()!!
-                    val editNoteBitmap = ContextCompat.getDrawable(context, R.drawable.baseline_edit_note_24)
-                        ?.toBitmap()
-                        ?.asImageBitmap()!!
-
                     IconButton(onClick = { editMode.value = !editMode.value }) {
                         Icon(
-                            if(editMode.value) visibilityBitmap else  editNoteBitmap,
+                            imageVector = if (editMode.value)
+                                ImageVector.vectorResource(id = R.drawable.baseline_visibility_24)
+                            else
+                                ImageVector.vectorResource(id = R.drawable.baseline_edit_note_24),
                             contentDescription = "Edit Mode",
                             modifier = Modifier.size(48.dp)
                         )
@@ -80,7 +85,7 @@ fun TodoListScreen(
 
                     IconButton(onClick = { navController.navigate(Screen.Categories.route) }) {
                         Icon(
-                            categoryBitmap,
+                            ImageVector.vectorResource(id = R.drawable.baseline_category_24),
                             contentDescription = "Categories",
                             modifier = Modifier.size(48.dp)
                         )
@@ -93,6 +98,7 @@ fun TodoListScreen(
                             modifier = Modifier.size(48.dp)
                         )
                     }
+
                     DropdownMenu(
                         expanded = sortDropdownExpanded.value,
                         onDismissRequest = {
@@ -106,17 +112,15 @@ fun TodoListScreen(
                                     sortDropdownExpanded.value = false
                                 },
                             ) {
-                                Text(itemValue.name, style = MaterialTheme.typography.headlineSmall)
+                                Text(itemValue.ruleName, style = MaterialTheme.typography.headlineSmall)
                             }
                         }
                     }
                 },
                 title = {
                     Text("Todos List", style = MaterialTheme.typography.headlineLarge)
-                },
-                modifier = Modifier.background(color = MaterialTheme.colorScheme.primary)
-            )
-        },
+                })
+            },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { showCreateDialog.value = true },
@@ -129,9 +133,9 @@ fun TodoListScreen(
             }
         },
         content = {
-            it.calculateBottomPadding()
+            it.calculateTopPadding()
             Column {
-                Spacer(modifier = Modifier.height(48.dp))
+                Spacer(modifier = Modifier.height(64.dp))
                 LazyColumn(modifier = Modifier.weight(1f)) {
                     val ordered = orderByRule.value.rule(tasks.filter { item -> !item.completed })
                     items(ordered) { task ->

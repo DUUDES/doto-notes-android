@@ -1,5 +1,6 @@
 package uni.digi2.dotonotes.ui.screens.tasks
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -54,6 +56,14 @@ fun CompletedTasksScreen(
     val auth = FirebaseAuth.getInstance()
 
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text("Page name", style = MaterialTheme.typography.headlineLarge)
+                },
+                modifier = Modifier.background(color = MaterialTheme.colorScheme.primary)
+            )
+        },
         content = {
             it.calculateBottomPadding()
             Column {
