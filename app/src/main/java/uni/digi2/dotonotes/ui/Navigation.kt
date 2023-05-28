@@ -2,14 +2,13 @@
 
 package uni.digi2.dotonotes.ui
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
@@ -24,15 +23,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -69,10 +64,9 @@ fun AppNavHost(
     val tasksViewModel = TodoViewModel(tasksDao, categoriesDao)
     val categoriesViewModel = TaskCategoriesViewModel(categoriesDao)
 
-
     NavHost(
         navController = navController as NavHostController,
-        startDestination = Screen.Auth.route
+        startDestination = Screen.Auth.route,
     ) {
         composable(Screen.Profile.route) {
             ProfileScreen(
@@ -82,6 +76,7 @@ fun AppNavHost(
 
                     FirebaseAuth.getInstance().signOut()
                     navController.navigate(Screen.Auth.route)
+
                 },
                 onDeleteAccount = {
                     FirebaseAuth.getInstance().currentUser?.let { it1 ->
@@ -108,11 +103,8 @@ fun AppNavHost(
             CompletedTasksScreen(navController, tasksViewModel)
         }
         composable(Screen.Auth.route) {
-            if (FirebaseAuth.getInstance().currentUser == null){
-                AuthScreen(navController)
-            } else {
-                TodoListScreen(navController, tasksViewModel)
-            }
+            navController.popBackStack(route = Screen.Auth.route, inclusive = true)
+            AuthScreen(navController = navController)
         }
         composable(route = "task_details") {
             TaskDetailsScreen(viewModel = tasksViewModel)
@@ -129,67 +121,69 @@ val items = listOf(
     Screen.Profile,
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DoToApplication(navController: NavController) {
 
     CompositionLocalProvider(LocalNavController provides navController) {
-        Scaffold(
-            bottomBar = {
-                DoToTheme {
-                    BottomNavigation {
-                        val navBackStackEntry by LocalNavController.current.currentBackStackEntryAsState()
-                        val currentDestination = navBackStackEntry?.destination
+            Scaffold(
+                bottomBar = {
+                    DoToTheme {
+                        BottomNavigation {
+                            val navBackStackEntry by LocalNavController.current.currentBackStackEntryAsState()
+                            val currentDestination = navBackStackEntry?.destination
 
-                        items.forEach { screen ->
-                            val selected = currentDestination?.hierarchy?.any { it.route == screen.route } ?: false
-                            val onClick = {
-                                navController.navigate(screen.route) {
-                                    popUpTo(navController.graph.startDestinationId) {
-                                        saveState = true
+                            items.forEach { screen ->
+                                val selected =
+                                    currentDestination?.hierarchy?.any { it.route == screen.route }
+                                        ?: false
+                                val onClick = {
+                                    navController.navigate(screen.route) {
+                                        popUpTo(navController.graph.startDestinationId) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
                                     }
-                                    launchSingleTop = true
                                 }
-                            }
 
-                            BottomNavigationItem(
-                                icon = {
-                                    Icon(
-                                        screen.icon,
-                                        contentDescription = stringResource(id = screen.title) ,
-                                        tint = if (selected) MaterialTheme.colorScheme.onPrimary
-                                        else MaterialTheme.colorScheme.secondary,
-                                        modifier = Modifier.size(if (selected) 28.dp else 36.dp)
-                                    )
-                                },
-                                alwaysShowLabel = false,
-                                label = {
-                                    AnimatedVisibility(visible = selected) {
-                                        Text(
-                                            text = stringResource(id = screen.title),
-                                            color = MaterialTheme.colorScheme.onPrimary
+                                BottomNavigationItem(
+                                    icon = {
+                                        Icon(
+                                            screen.icon,
+                                            contentDescription = stringResource(id = screen.title),
+                                            tint = if (selected) MaterialTheme.colorScheme.onPrimary
+                                            else MaterialTheme.colorScheme.secondary,
+                                            modifier = Modifier.size(if (selected) 28.dp else 36.dp)
                                         )
-                                    }
-                                },
-                                selected = selected,
-                                onClick = onClick,
-                                modifier = Modifier.background(MaterialTheme.colorScheme.primary)
-                            )
-                       }
+                                    },
+                                    alwaysShowLabel = false,
+                                    label = {
+                                        AnimatedVisibility(visible = selected) {
+                                            Text(
+                                                text = stringResource(id = screen.title),
+                                                color = MaterialTheme.colorScheme.onPrimary
+                                            )
+                                        }
+                                    },
+                                    selected = selected,
+                                    onClick = onClick,
+                                    modifier = Modifier.background(MaterialTheme.colorScheme.primary)
+                                )
+                            }
+                        }
                     }
                 }
+            ) { innerPadding ->
+                innerPadding.calculateTopPadding()
+                Box(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .background(MaterialTheme.colorScheme.surface)
+                ) {
+                    AppNavHost(navController = navController)
+                }
             }
-        ) { innerPadding ->
-            innerPadding.calculateTopPadding()
-            Box(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .background(MaterialTheme.colorScheme.surface)
-            ) {
-                AppNavHost(navController = navController)
-            }
-        }
     }
+
 }
 
 sealed class Screen(val route: String, val title: Int, val icon: ImageVector) {
