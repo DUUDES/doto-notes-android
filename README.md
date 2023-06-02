@@ -1,4 +1,5 @@
 # doto-notes
+Google Play Store: https://play.google.com/store/apps/details?id=uni.digi2.dotonotes
 ## To-Do android застосунок з різними фічами ~~і багами~~.
 
 ## Розроблено та спроєктовано:
